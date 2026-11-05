@@ -18,6 +18,7 @@ export default async function OccasionsPage() {
         tag="Shop by occasion"
         title="Made sweeter for your"
         highlight="celebration!"
+        stacked
         intro="We have themed favours planned and ready for every holiday and occasion. Want something different? We’ll make a custom order just for you."
       />
       <Container className="py-12">
