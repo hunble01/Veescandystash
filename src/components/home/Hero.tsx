@@ -6,6 +6,7 @@ import {
   JellyBean,
   Lollipop,
   PeachRing,
+  SmileyCandy,
   SourBelt,
   Sparkle,
   WrappedCandy,
@@ -27,6 +28,16 @@ const floaters = [
   { el: <Sparkle c={k.teal} />, cls: "top-[20%] left-[26%] w-6 sm:w-8", depth: 2.4, r: "0deg", dur: "4s" },
   { el: <Sparkle c={k.pink} />, cls: "bottom-[38%] right-[22%] w-5 sm:w-7", depth: 2.2, r: "0deg", dur: "5s" },
   { el: <Sparkle c={k.orange} />, cls: "top-[62%] left-[8%] w-5", depth: 2, r: "0deg", dur: "4.5s" },
+  // More candy (Vee, 2026-11-04), in the gaps around the headline.
+  { el: <SmileyCandy c={k.pink} />, cls: "top-[3%] left-[36%] hidden w-14 sm:block lg:w-16", depth: 1.2, r: "-8deg", dur: "6.8s" },
+  { el: <WrappedCandy c={k.orange} />, cls: "top-[9%] right-[26%] hidden w-16 md:block lg:w-20", depth: 1.5, r: "14deg", dur: "7.2s" },
+  { el: <JellyBean c={k.teal} />, cls: "top-[13%] left-[12%] hidden w-10 sm:block lg:w-12", depth: 2.1, r: "-24deg", dur: "5.2s" },
+  { el: <Lollipop c={k.orange} />, cls: "top-[54%] right-[-3%] w-12 sm:w-14 lg:right-[8%] lg:w-16", depth: 1, r: "22deg", dur: "8.5s" },
+  { el: <GummyBear c={k.teal} />, cls: "top-[72%] left-[-2%] w-12 sm:w-14 lg:left-[4%] lg:w-16", depth: 1.7, r: "-10deg", dur: "6.2s" },
+  { el: <PeachRing c={k.teal} c2={k.orange} />, cls: "bottom-[5%] right-[30%] w-12 sm:w-16", depth: 1.3, r: "-16deg", dur: "7.8s" },
+  { el: <JellyBean c={k.pink} />, cls: "bottom-[9%] left-[30%] w-9 sm:w-11", depth: 2.2, r: "40deg", dur: "5.8s" },
+  { el: <SourBelt c={k.pink} c2={k.cream} />, cls: "bottom-[3%] right-[-10%] hidden w-28 md:block lg:right-[16%] lg:w-32", depth: 0.9, r: "-8deg", dur: "8.2s" },
+  { el: <Sparkle c={k.teal} />, cls: "top-[7%] right-[42%] w-5 sm:w-6", depth: 2.6, r: "0deg", dur: "4.2s" },
 ];
 
 type Piece = { id: number; x: number; y: number; dx: number; dy: number; rot: number; size: number; shape: number; colour: string };

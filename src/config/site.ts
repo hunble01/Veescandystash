@@ -24,7 +24,7 @@ export const site = {
 
   social: {
     instagram: "https://www.instagram.com/VeesCandyStash/" as string | null,
-    tiktok: null as string | null,
+    tiktok: "https://www.tiktok.com/@veescandystash" as string | null,
     facebook: null as string | null,
   },
 

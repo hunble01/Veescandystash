@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { ContactForm } from "./ContactForm";
-import { Container, DraftNote, PageHeader } from "@/components/ui";
+import { Container, PageHeader } from "@/components/ui";
 import { site } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Contact",
   description: `Get in touch with ${site.name}.`,
 };
+
+const socialLabel: Record<string, string> = { instagram: "Instagram", tiktok: "TikTok", facebook: "Facebook" };
 
 export default function ContactPage() {
   const socials = Object.entries(site.social).filter(([, url]) => url) as [string, string][];
@@ -28,14 +30,13 @@ export default function ContactPage() {
             {socials.length ? (
               <ul className="mt-1 space-y-1">
                 {socials.map(([name, url]) => (
-                  <li key={name}><a href={url} className="capitalize text-teal-deep underline" target="_blank" rel="noopener">{name}</a></li>
+                  <li key={name}><a href={url} className="text-teal-deep underline" target="_blank" rel="noopener">{socialLabel[name] ?? name}</a></li>
                 ))}
               </ul>
             ) : (
               <p className="mt-1 text-ink-soft">Coming soon.</p>
             )}
           </div>
-          <DraftNote>TikTok and Facebook go in the site settings file once Vee provides them.</DraftNote>
         </aside>
       </Container>
     </>
