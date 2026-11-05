@@ -18,7 +18,8 @@ export const site = {
 
   contact: {
     email: "contact@veescandystash.ca" as string | null,
-    phone: "647-713-2718" as string | null,
+    // Vee only takes contact by email (2026-11-04); null hides every phone link.
+    phone: null as string | null,
   },
 
   social: {

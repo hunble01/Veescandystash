@@ -35,18 +35,16 @@ export default function AboutPage() {
           </div>
           <h2 className="mt-8 text-2xl font-semibold text-pink">Contact</h2>
           <dl className="mt-4 space-y-3 text-lg">
-            <div>
-              <dt className="text-sm font-extrabold uppercase tracking-wide text-ink-soft">Phone</dt>
-              <dd>
-                {site.contact.phone ? (
+            {site.contact.phone && (
+              <div>
+                <dt className="text-sm font-extrabold uppercase tracking-wide text-ink-soft">Phone</dt>
+                <dd>
                   <a href={`tel:+1${site.contact.phone.replace(/\D/g, "")}`} className="font-semibold text-teal-deep underline underline-offset-4">
                     {site.contact.phone}
                   </a>
-                ) : (
-                  <span className="text-ink-soft">Coming soon</span>
-                )}
-              </dd>
-            </div>
+                </dd>
+              </div>
+            )}
             <div>
               <dt className="text-sm font-extrabold uppercase tracking-wide text-ink-soft">Email</dt>
               <dd>

@@ -8,7 +8,7 @@ export const faq: FaqItem[] = [
     topic: "Ordering",
     question: "How do I place an order?",
     answer:
-      "Order right here on the website: build your own stash, pick a themed bag from Occasions, or send us a custom order for any event you like. Having trouble? Just email or call us.",
+      "Order right here on the website: build your own stash, pick a themed bag from Occasions, or send us a custom order for any event you like. Having trouble? Just email us.",
     links: ["build", "occasions", "custom", "email", "phone"],
   },
   { topic: "Ordering", question: "What sizes do your bags come in?", answer: "Our bags come in four sizes: 0.5 lb, 1 lb, 2 lb and 5 lb. Planning an occasion? We can make them smaller at your request, just let us know." },

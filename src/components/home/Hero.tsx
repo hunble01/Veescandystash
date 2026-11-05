@@ -120,7 +120,6 @@ export function Hero() {
           <span className="block text-[clamp(2.4rem,9vw,5.5rem)]">Needs a</span>
           <span className="relative mt-1 inline-block -rotate-3 text-[clamp(5rem,24vw,12rem)] leading-[0.9] text-pink text-pop">
             Stash
-            <RotatingBadge />
           </span>
         </h1>
 
@@ -132,21 +131,3 @@ export function Hero() {
   );
 }
 
-function RotatingBadge() {
-  return (
-    <span aria-hidden className="absolute -top-14 -right-3 block w-18 rotate-3 sm:-top-8 sm:-right-20 sm:w-32">
-      <svg viewBox="0 0 120 120" className="animate-spin-slow [animation-duration:18s]">
-        <defs>
-          <path id="badge-circle" d="M60 60m-44 0a44 44 0 1 1 88 0a44 44 0 1 1-88 0" />
-        </defs>
-        <circle cx="60" cy="60" r="58" fill={k.teal} stroke={k.ink} strokeWidth="3" />
-        <text fill="#fff" fontSize="13.5" fontWeight="800" letterSpacing="2.2" fontFamily="var(--font-sans)">
-          <textPath href="#badge-circle">PICK ✦ PERSONALIZE ✦ ENJOY ✦</textPath>
-        </text>
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center">
-        <Sparkle c={k.cream} className="w-8 sm:w-10" />
-      </span>
-    </span>
-  );
-}

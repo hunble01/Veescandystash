@@ -48,7 +48,7 @@ export default async function FaqPage() {
                   <p className="px-5 pb-5 text-ink-soft">{f.answer ?? "Answer coming soon."}</p>
                   {f.links?.length ? (
                     <div className="flex flex-wrap gap-3 px-5 pb-5">
-                      {f.links.map(faqLink).map((l) =>
+                      {f.links.map(faqLink).filter((l) => l !== null).map((l) =>
                         l.href ? (
                           <ButtonLink key={l.label} href={l.href} variant="secondary" className="min-h-11 px-5 text-sm">
                             {l.label}
