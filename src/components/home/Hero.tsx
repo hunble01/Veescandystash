@@ -39,7 +39,7 @@ const floaters = [
   { el: <SourBelt c={k.pink} c2={k.cream} />, cls: "bottom-[3%] right-[-10%] hidden w-28 md:block lg:right-[16%] lg:w-32", depth: 0.9, r: "-8deg", dur: "8.2s" },
   { el: <Sparkle c={k.teal} />, cls: "top-[7%] right-[42%] w-5 sm:w-6", depth: 2.6, r: "0deg", dur: "4.2s" },
   // Orange bear beside the "h" of Stash, matching the top-left one (Vee, 2026-11-04).
-  { el: <GummyBear c={k.orange} />, cls: "top-[40%] right-[15%] hidden w-20 sm:block lg:right-[17%] lg:w-24", depth: 1.3, r: "12deg", dur: "6.6s" },
+  { el: <GummyBear c={k.orange} />, cls: "top-[52%] right-[15%] hidden w-20 sm:block lg:right-[17%] lg:w-24", depth: 1.3, r: "12deg", dur: "6.6s" },
 ];
 
 type Piece = { id: number; x: number; y: number; dx: number; dy: number; rot: number; size: number; shape: number; colour: string };
