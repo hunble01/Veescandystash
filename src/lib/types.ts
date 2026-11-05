@@ -23,7 +23,7 @@ export interface Product {
   summary: string;
   description: string;
   type: ProductType;
-  flavour: "sweet" | "sour" | "sweet_sour" | "your_pick";
+  flavour: "sweet" | "sour" | "sweet_sour" | "your_pick" | "surprise";
   accent: Accent;
   sizes: SizeVariant[];
   photos: string[];
@@ -76,6 +76,8 @@ export interface SeasonalCollection {
   status: CollectionStatus;
   orderCutoff: string | null;
   active: boolean;
+  /** Ready-to-order products shown on the holiday page (e.g. the Christmas advent calendar). Optional in local data. */
+  productIds?: string[];
 }
 
 export interface PackagingOption {

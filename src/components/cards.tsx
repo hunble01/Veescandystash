@@ -17,6 +17,7 @@ function BagCandies({ flavour }: { flavour: Product["flavour"] }) {
     sweet: [<GummyBear key="a" c={k.pink} />, <GummyBear key="b" c={k.orange} />, <JellyBean key="c" c={k.pink} />],
     sweet_sour: [<PeachRing key="a" />, <GummyBear key="b" c={k.teal} />, <SourBelt key="c" c={k.pink} />],
     your_pick: [<WrappedCandy key="a" c={k.pink} />, <PeachRing key="b" c={k.teal} c2={k.orange} />, <GummyBear key="c" c={k.orange} />],
+    surprise: [<WrappedCandy key="a" c={k.teal} />, <Lollipop key="b" c={k.pink} />, <WrappedCandy key="c" c={k.orange} />],
   }[flavour];
   const spots = [
     "top-[14%] left-[10%] w-[34%] -rotate-12 group-hover:-translate-y-3 group-hover:-rotate-20",

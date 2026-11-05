@@ -31,6 +31,7 @@ export const flavourLabel: Record<Product["flavour"], string> = {
   sour: "Sour",
   sweet_sour: "Sweet + Sour",
   your_pick: "Your pick",
+  surprise: "Candy surprise",
 };
 
 // Full class strings so Tailwind can see them.

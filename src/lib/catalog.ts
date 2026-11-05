@@ -32,7 +32,8 @@ const OCCASIONS = `*[_type == "occasion"] | order(coalesce(sortOrder, 999) asc, 
 
 const SEASONAL = `*[_type == "seasonalCollection" && active != false] | order(coalesce(sortOrder, 999) asc, name asc){
   "id": _id, "slug": slug.current, name, "description": coalesce(description, ""), "ideas": coalesce(ideas, []),
-  "themes": coalesce(themes[]{ name, description }, []), "accent": coalesce(accent, "teal"), "status": coalesce(status, "coming_soon"), orderCutoff, "active": true
+  "themes": coalesce(themes[]{ name, description }, []), "accent": coalesce(accent, "teal"), "status": coalesce(status, "coming_soon"), orderCutoff, "active": true,
+  "productIds": coalesce(products[]._ref, [])
 }`;
 
 type SanityCandy = Omit<CandyOption, "extraChargeCents"> & { extraCharge: number | null };

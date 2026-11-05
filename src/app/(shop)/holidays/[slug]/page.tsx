@@ -7,7 +7,9 @@ import { PhotoPlaceholder } from "@/components/PhotoPlaceholder";
 import { ThemeOrderForm } from "@/components/ThemeOrderForm";
 import { ButtonLink, Container, Eyebrow } from "@/components/ui";
 import { accentClasses, collectionStatusLabel } from "@/lib/format";
-import { getSeasonalCollection, getSeasonalCollections } from "@/lib/catalog";
+import { getProducts, getSeasonalCollection, getSeasonalCollections } from "@/lib/catalog";
+import { QuickAddCard } from "@/components/QuickAddCard";
+import { checkoutOpen } from "@/lib/readiness";
 
 export async function generateStaticParams() {
   return (await getSeasonalCollections()).map((c) => ({ slug: c.slug }));
@@ -32,6 +34,9 @@ async function HolidayContent({ params }: { params: PageProps<"/holidays/[slug]"
   if (!holiday) notFound();
   const a = accentClasses[holiday.accent];
   const closed = holiday.status === "closed";
+  // Set-price products for this holiday (e.g. the Christmas advent calendar).
+  const ids = holiday.productIds ?? [];
+  const readyToOrder = ids.length ? (await getProducts()).filter((p) => ids.includes(p.id)) : [];
 
   return (
     <>
@@ -51,6 +56,20 @@ async function HolidayContent({ params }: { params: PageProps<"/holidays/[slug]"
           <PhotoPlaceholder accent={holiday.accent} className="aspect-[4/3] bg-white/40" label={`${holiday.name} photo coming soon`} />
         </Container>
       </section>
+
+      {readyToOrder.length > 0 && (
+        <section aria-labelledby="ready-title" className="border-b-[3px] border-dashed border-ink/15">
+          <Container className="py-14">
+            <Eyebrow>Ready to order</Eyebrow>
+            <h2 id="ready-title" className="text-3xl font-semibold sm:text-4xl">{holiday.name} specials</h2>
+            <div className="mt-8 grid gap-8">
+              {readyToOrder.map((p) => (
+                <QuickAddCard key={p.id} product={p} orderingOpen={checkoutOpen()} />
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
 
       <section id="order" className="scroll-mt-28">
         <Container className="py-14">

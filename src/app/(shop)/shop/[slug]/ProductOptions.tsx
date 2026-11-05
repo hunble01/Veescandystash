@@ -38,7 +38,8 @@ export function ProductOptions({ product, orderingOpen }: { product: Product; or
 
   return (
     <div className="mt-8 space-y-6">
-      <fieldset>
+      {/* One-size products (e.g. the advent calendar) skip the size choice (Vee, 2026-11-04). */}
+      <fieldset className={sizes.length === 1 ? "hidden" : undefined}>
         <legend className="mb-3 font-semibold">Size</legend>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {sizes.map((s) => (
