@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Local Netlify folder
 .netlify
+
+# netlify local build leftovers
+deno.lock
