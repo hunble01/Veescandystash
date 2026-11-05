@@ -17,15 +17,15 @@ export const site = {
   // Top teal bar. announcementHref makes it a link (Vee, 2026-11-04: promote
   // the advent calendar).
   announcement: "🎄 NEW: the Christmas Advent Calendar, 24 days of candy surprises!" as string | null,
-  announcementHref: "/holidays/christmas" as string | null,
+  announcementHref: "/shop/christmas-advent-calendar" as string | null,
 
   // Big promo on the home page, under the ribbons. Points at a product in
   // Sanity by its slug; set to null to hide it (e.g. after Christmas).
   promo: {
     productSlug: "christmas-advent-calendar",
-    href: "/holidays/christmas",
+    href: "/shop/christmas-advent-calendar",
     eyebrow: "New for Christmas",
-    cta: "See the advent calendar",
+    cta: "See it & add to bag",
   } as { productSlug: string; href: string; eyebrow: string; cta: string } | null,
 
   contact: {

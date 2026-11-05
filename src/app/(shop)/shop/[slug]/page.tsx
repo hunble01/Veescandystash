@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { ProductGallery } from "./ProductGallery";
 import { ProductOptions } from "./ProductOptions";
 import { FavouriteButton } from "@/components/FavouriteButton";
 import { PageSkeleton } from "@/components/PageSkeleton";
-import { PhotoPlaceholder } from "@/components/PhotoPlaceholder";
 import { Container, DraftNote, Pill } from "@/components/ui";
 import { accentClasses, flavourLabel, stockLabel } from "@/lib/format";
 import { getProduct, getProducts } from "@/lib/catalog";
@@ -44,14 +44,7 @@ async function ProductContent({ params }: { params: PageProps<"/shop/[slug]">["p
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-        <div className="grid content-start gap-3">
-          <PhotoPlaceholder accent={product.accent} className="aspect-square" />
-          <div className="grid grid-cols-3 gap-3">
-            {[0, 1, 2].map((i) => (
-              <PhotoPlaceholder key={i} accent={product.accent} className="aspect-square" label="Photo" />
-            ))}
-          </div>
-        </div>
+        <ProductGallery product={product} />
 
         <div>
           <div className="mb-3 flex flex-wrap gap-2">

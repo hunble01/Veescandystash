@@ -8,8 +8,7 @@ import { ThemeOrderForm } from "@/components/ThemeOrderForm";
 import { ButtonLink, Container, Eyebrow } from "@/components/ui";
 import { accentClasses, collectionStatusLabel } from "@/lib/format";
 import { getProducts, getSeasonalCollection, getSeasonalCollections } from "@/lib/catalog";
-import { QuickAddCard } from "@/components/QuickAddCard";
-import { checkoutOpen } from "@/lib/readiness";
+import { SpecialCard } from "@/components/SpecialCard";
 
 export async function generateStaticParams() {
   return (await getSeasonalCollections()).map((c) => ({ slug: c.slug }));
@@ -64,7 +63,7 @@ async function HolidayContent({ params }: { params: PageProps<"/holidays/[slug]"
             <h2 id="ready-title" className="text-3xl font-semibold sm:text-4xl">{holiday.name} specials</h2>
             <div className="mt-8 grid gap-8">
               {readyToOrder.map((p) => (
-                <QuickAddCard key={p.id} product={p} orderingOpen={checkoutOpen()} />
+                <SpecialCard key={p.id} product={p} />
               ))}
             </div>
           </Container>

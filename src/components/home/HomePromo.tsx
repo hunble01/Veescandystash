@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { Sparkle, candyColours as k } from "@/components/Candies";
 import { ButtonLink, Container } from "@/components/ui";
@@ -15,26 +16,20 @@ export async function HomePromo() {
   const product = (await getProducts()).find((p) => p.slug === promo.productSlug);
   if (!product) return null;
   const size = product.sizes.find((s) => s.active && s.priceCents != null);
-  const [photo1, photo2] = product.photos;
+  // First photo only; the product page shows the rest (Vee, 2026-11-04).
+  const photo1 = product.photos[0];
 
   return (
     <section aria-labelledby="promo-title" className="relative overflow-hidden border-y-[3px] border-ink bg-holiday-red-soft py-16 sm:py-20">
       <Sparkle aria-hidden c={k.pink} className="absolute top-8 left-[6%] w-8" />
       <Sparkle aria-hidden c={k.teal} className="absolute right-[8%] bottom-10 w-6" />
       <Container className="grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]">
-        {/* Photos, tilted like snapshots */}
+        {/* First photo, tilted like a snapshot; tapping it opens the product */}
         <div className="relative mx-auto w-full max-w-lg">
           {photo1 ? (
-            <>
-              <div className="relative aspect-[1.08] -rotate-3 overflow-hidden rounded-3xl border-[3px] border-ink bg-white shadow-[var(--shadow-pop-lg)]">
-                <Image src={photo1} alt={`${product.name}, open with candy inside`} fill sizes="(min-width: 1024px) 520px, 90vw" className="object-cover" />
-              </div>
-              {photo2 && (
-                <div className="absolute -right-3 -bottom-8 aspect-[1.1] w-[46%] rotate-6 overflow-hidden rounded-2xl border-[3px] border-ink bg-white shadow-[var(--shadow-pop)] sm:-right-8">
-                  <Image src={photo2} alt="" fill sizes="240px" className="object-cover" />
-                </div>
-              )}
-            </>
+            <Link href={promo.href} aria-label={product.name} className="relative block aspect-[1.08] -rotate-3 overflow-hidden rounded-3xl border-[3px] border-ink bg-white shadow-[var(--shadow-pop-lg)] transition hover:-rotate-1">
+              <Image src={photo1} alt={`${product.name}, open with candy inside`} fill sizes="(min-width: 1024px) 520px, 90vw" className="object-cover" />
+            </Link>
           ) : null}
           <span className="absolute -top-5 -left-3 grid h-20 w-20 -rotate-12 place-items-center rounded-full border-[3px] border-ink bg-holiday-red text-center font-display text-xl leading-none text-white shadow-[var(--shadow-pop)] [text-shadow:2px_2px_0_var(--color-ink)]">
             New!
