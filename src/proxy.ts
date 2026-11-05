@@ -13,14 +13,12 @@ export default clerkMiddleware(async (auth, req) => {
 // header). Shop pages skip it, so a visitor's first page load never waits on
 // a Clerk redirect (with development keys that redirect left phones on a
 // blank page). Login state on shop pages comes from Clerk's browser code.
-const STATIC = "(?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest))";
-
 export const config = {
   matcher: [
     "/account/:path*",
     "/sign-in/:path*",
     "/sign-up/:path*",
     "/(api|trpc)(.*)",
-    { source: `/(${STATIC}.*)`, has: [{ type: "header", key: "next-action" }] },
+    { source: "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)", has: [{ type: "header", key: "next-action" }] },
   ],
 };
