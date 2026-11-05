@@ -13,7 +13,6 @@ import {
   candyPalette,
   candyShapes,
 } from "@/components/Candies";
-import { site } from "@/config/site";
 
 // Floating candies around the headline. depth drives pointer parallax;
 // r is the resting tilt; positions keep the centre clear for the text.
@@ -116,11 +115,6 @@ export function Hero() {
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-[min(calc(100svh-7rem),56rem)] max-w-5xl flex-col items-center justify-center px-5 py-20 text-center sm:py-28">
-        <p className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-4 py-1.5 text-sm font-bold shadow-[var(--shadow-pop)]">
-          <span className="h-2.5 w-2.5 rounded-full bg-teal" aria-hidden />
-          Candy bags + party favours<span className="hidden sm:inline"> · {site.region}</span>
-        </p>
-
         <h1 className="relative text-orange">
           <span className="block text-[clamp(2.4rem,9vw,5.5rem)]">Every Sweet Tooth</span>
           <span className="block text-[clamp(2.4rem,9vw,5.5rem)]">Needs a</span>
