@@ -156,10 +156,13 @@ export function StashBuilder({ product, candies, orderingOpen }: { product: Prod
                 ) : (
                   <BagIllustration scale={sizes.length > 1 ? i / (sizes.length - 1) : 1} label={s.label} />
                 )}
-                <span className="mt-3 px-2 font-display text-2xl">{s.label}</span>
+                {/* Price beside the size (Vee, 2026-11-04). */}
+                <span className="mt-3 flex flex-wrap items-baseline justify-between gap-x-2 px-2">
+                  <span className="font-display text-2xl">{s.label}</span>
+                  <span className="font-display text-xl text-orange">{formatPrice(s.priceCents)}</span>
+                </span>
                 <span className="px-2 pb-2 text-sm font-semibold text-ink-soft">
-                  {formatPrice(s.priceCents)}
-                  <> · {s.pickAllowance != null ? `pick up to ${s.pickAllowance}` : "pick as many as you like"}</>
+                  {s.pickAllowance != null ? `Pick up to ${s.pickAllowance} candies` : "Pick as many as you like"}
                 </span>
               </label>
             ))}

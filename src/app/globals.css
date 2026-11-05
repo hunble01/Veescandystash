@@ -46,6 +46,8 @@
 
   --font-display: var(--font-shrikhand), "Cooper Black", Georgia, serif;
   --font-retro: var(--font-shrikhand), "Cooper Black", Georgia, serif;
+  /* Logo-style script, for the home page "Stash" only. */
+  --font-logo: var(--font-leckerli), "Brush Script MT", cursive;
   --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
 
   --radius-card: 1.75rem;

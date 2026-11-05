@@ -1,6 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Shrikhand } from "next/font/google";
+import { Bricolage_Grotesque, Leckerli_One, Shrikhand } from "next/font/google";
 import { site } from "@/config/site";
 import "./globals.css";
 
@@ -8,6 +8,14 @@ import "./globals.css";
 // preferred this). Body: Bricolage Grotesque.
 const shrikhand = Shrikhand({
   variable: "--font-shrikhand",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+// Leckerli One: closest Google font to the "Stash" script in Vee's logo,
+// used only for the big "Stash" on the home page (Vee, 2026-11-04).
+const leckerli = Leckerli_One({
+  variable: "--font-leckerli",
   subsets: ["latin"],
   weight: "400",
 });
@@ -48,7 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         },
       }}
     >
-      <html lang="en-CA" className={`${shrikhand.variable} ${bricolage.variable} h-full antialiased`}>
+      <html lang="en-CA" className={`${shrikhand.variable} ${leckerli.variable} ${bricolage.variable} h-full antialiased`}>
         <body className="min-h-full">{children}</body>
       </html>
     </ClerkProvider>

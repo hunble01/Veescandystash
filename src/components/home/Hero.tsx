@@ -38,6 +38,8 @@ const floaters = [
   { el: <JellyBean c={k.pink} />, cls: "bottom-[9%] left-[30%] w-9 sm:w-11", depth: 2.2, r: "40deg", dur: "5.8s" },
   { el: <SourBelt c={k.pink} c2={k.cream} />, cls: "bottom-[3%] right-[-10%] hidden w-28 md:block lg:right-[16%] lg:w-32", depth: 0.9, r: "-8deg", dur: "8.2s" },
   { el: <Sparkle c={k.teal} />, cls: "top-[7%] right-[42%] w-5 sm:w-6", depth: 2.6, r: "0deg", dur: "4.2s" },
+  // Orange bear beside the "h" of Stash, matching the top-left one (Vee, 2026-11-04).
+  { el: <GummyBear c={k.orange} />, cls: "top-[40%] right-[15%] hidden w-20 sm:block lg:right-[17%] lg:w-24", depth: 1.3, r: "12deg", dur: "6.6s" },
 ];
 
 type Piece = { id: number; x: number; y: number; dx: number; dy: number; rot: number; size: number; shape: number; colour: string };
@@ -129,7 +131,7 @@ export function Hero() {
         <h1 className="relative text-orange">
           <span className="block text-[clamp(2.4rem,9vw,5.5rem)]">Every Sweet Tooth</span>
           <span className="block text-[clamp(2.4rem,9vw,5.5rem)]">Needs a</span>
-          <span className="relative mt-1 inline-block -rotate-3 text-[clamp(5rem,24vw,12rem)] leading-[0.9] text-pink text-pop">
+          <span className="relative mt-1 inline-block -rotate-3 font-logo text-[clamp(5rem,24vw,12rem)] leading-[1.05] text-pink text-pop">
             Stash
           </span>
         </h1>
