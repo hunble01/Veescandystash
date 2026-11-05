@@ -8,7 +8,7 @@ export function Logo() {
   return (
     <Link href="/" className="inline-flex shrink-0 items-center" aria-label={`${site.name} home`}>
       {site.logo ? (
-        <Image src={site.logo.src} width={site.logo.width} height={site.logo.height} alt={site.name} priority className="h-11 w-auto" />
+        <Image src={site.logo.src} width={site.logo.width} height={site.logo.height} alt={site.name} priority className="h-14 w-auto" />
       ) : (
         <span className="flex flex-col rounded-2xl border-2 border-dashed border-ink/40 px-3 py-0.5 leading-tight">
           <span className="text-[9px] font-extrabold tracking-[0.2em] text-ink-soft uppercase">Logo here</span>

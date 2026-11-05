@@ -9,9 +9,10 @@ export const site = {
     "Sweet little candy bags, party-ready favours and custom candy for every occasion, from a small Ontario candy shop.",
   region: "Ontario, Canada",
 
-  // Supplied logo file goes in /public (e.g. /public/logo.svg). Until then
-  // a labelled placeholder is shown; we never draw our own logo.
-  logo: null as { src: string; width: number; height: number } | null,
+  // Supplied logo file lives in /public. Currently cropped from a phone
+  // screenshot (docs/brand/); swap in the original file when Vee has it. Set
+  // to null to show the labelled placeholder. We never draw our own logo.
+  logo: { src: "/logo.png", width: 320, height: 320 } as { src: string; width: number; height: number } | null,
 
   announcement: "New website in progress — products and prices are coming soon.",
 
