@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { GummyBear, PeachRing, SourBelt, Sparkle, WrappedCandy, candyColours as k } from "@/components/Candies";
 import { Hero } from "@/components/home/Hero";
+import { HomePromo } from "@/components/home/HomePromo";
 import { JoinTheFun } from "@/components/JoinTheFun";
 import { Marquee } from "@/components/Marquee";
 import { ButtonLink, Container, Eyebrow, SectionHeading } from "@/components/ui";
@@ -47,6 +48,9 @@ export default async function Home() {
         <Marquee className="-rotate-3 bg-orange" items={["Sweet", "Sour", "Stashed", "Party-ready", "Gift-ready"]} />
         <Marquee className="relative z-10 -mt-2 rotate-2 bg-teal" reverse star={k.ink} items={["Birthdays", "Baby showers", "Graduations", "Gender reveals", "Holidays"]} />
       </div>
+
+      {/* Seasonal promo (site.promo): the Christmas advent calendar. */}
+      <HomePromo />
 
       {/* Ways to order */}
       <section className="py-16 sm:py-24">

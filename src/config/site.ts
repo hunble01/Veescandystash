@@ -14,7 +14,19 @@ export const site = {
   // to null to show the labelled placeholder. We never draw our own logo.
   logo: { src: "/logo.png", width: 320, height: 320 } as { src: string; width: number; height: number } | null,
 
-  announcement: "New website in progress — products and prices are coming soon.",
+  // Top teal bar. announcementHref makes it a link (Vee, 2026-11-04: promote
+  // the advent calendar).
+  announcement: "🎄 NEW: the Christmas Advent Calendar, 24 days of candy surprises!" as string | null,
+  announcementHref: "/holidays/christmas" as string | null,
+
+  // Big promo on the home page, under the ribbons. Points at a product in
+  // Sanity by its slug; set to null to hide it (e.g. after Christmas).
+  promo: {
+    productSlug: "christmas-advent-calendar",
+    href: "/holidays/christmas",
+    eyebrow: "New for Christmas",
+    cta: "See the advent calendar",
+  } as { productSlug: string; href: string; eyebrow: string; cta: string } | null,
 
   contact: {
     email: "contact@veescandystash.ca" as string | null,

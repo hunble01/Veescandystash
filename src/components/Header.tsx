@@ -39,7 +39,15 @@ function HeaderView({ pathname }: { pathname: string }) {
   return (
     <header className="sticky top-0 z-40">
       {site.announcement && (
-        <p className="border-b-[3px] border-ink bg-teal px-4 py-2 text-center text-sm font-bold text-ink">{site.announcement}</p>
+        <p className="border-b-[3px] border-ink bg-teal px-4 py-2 text-center text-sm font-bold text-ink">
+          {site.announcementHref ? (
+            <Link href={site.announcementHref} className="underline-offset-4 hover:underline">
+              {site.announcement} <span aria-hidden>→</span>
+            </Link>
+          ) : (
+            site.announcement
+          )}
+        </p>
       )}
       <div className="px-3 pt-3 sm:px-5">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 rounded-full border-[3px] border-ink bg-cream/95 pr-2 pl-3 shadow-[var(--shadow-pop)] backdrop-blur sm:pl-4">
