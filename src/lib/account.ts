@@ -33,7 +33,15 @@ export const getCustomer = cache(async (): Promise<Customer | null> => {
   };
 });
 
-export const currentUserId = async () => (await auth()).userId;
+// Forms on shop pages work for guests too: if Clerk can't tell who's sending
+// (e.g. it didn't run for this request), treat the sender as a guest.
+export const currentUserId = async (): Promise<string | null> => {
+  try {
+    return (await auth()).userId;
+  } catch {
+    return null;
+  }
+};
 
 // ---------- Orders ----------
 
