@@ -37,7 +37,7 @@ export function Avatar({ customer, size = "h-14 w-14 text-2xl" }: { customer: Cu
     // eslint-disable-next-line @next/next/no-img-element -- Clerk-hosted avatar, already sized
     <img src={customer.imageUrl} alt="" className={`${size} shrink-0 rounded-full border-[3px] border-ink object-cover`} />
   ) : (
-    <span aria-hidden className={`${size} grid shrink-0 place-items-center rounded-full border-[3px] border-ink bg-pink font-display text-ink`}>
+    <span aria-hidden className={`${size} grid shrink-0 place-items-center rounded-full border-[3px] border-ink bg-pink font-retro text-ink`}>
       {initial}
     </span>
   );

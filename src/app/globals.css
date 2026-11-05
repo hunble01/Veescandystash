@@ -43,7 +43,8 @@
   --color-holiday-gold-soft: #fbf0cc;
   --color-holiday-gold-deep: #8a6a0c;
 
-  --font-display: var(--font-shrikhand), "Cooper Black", Georgia, serif;
+  --font-display: var(--font-lobster), "Brush Script MT", Georgia, serif;
+  --font-retro: var(--font-shrikhand), "Cooper Black", Georgia, serif;
   --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
 
   --radius-card: 1.75rem;
@@ -117,8 +118,8 @@ h2 {
   font-family: var(--font-display);
   font-weight: 400;
   font-synthesis: none;
-  letter-spacing: 0.005em;
-  line-height: 1.02;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
   text-wrap: balance;
 }
 
@@ -219,4 +220,10 @@ h3 {
   .shop-shell {
     background: white !important;
   }
+}
+
+/* Lobster and Shrikhand come in one weight; never fake a bold version. */
+.font-display,
+.font-retro {
+  font-synthesis: none;
 }

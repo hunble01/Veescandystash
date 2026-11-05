@@ -70,7 +70,7 @@ export default async function CustomOrdersPage() {
           <ol className="mx-auto mt-10 grid max-w-4xl gap-4 text-left sm:grid-cols-3">
             {process.map((s, i) => (
               <li key={s.title} className="flex gap-3 rounded-[var(--radius-card)] border-[3px] border-ink bg-white p-4 shadow-[var(--shadow-pop)]">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-[3px] border-ink bg-orange font-display text-lg text-white">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-[3px] border-ink bg-orange font-retro text-lg text-white">
                   {i + 1}
                 </span>
                 <div>

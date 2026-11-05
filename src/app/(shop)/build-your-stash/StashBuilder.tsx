@@ -29,7 +29,7 @@ const stepButton =
 function StepHeading({ n, title, hint }: { n: number; title: string; hint?: React.ReactNode }) {
   return (
     <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-1">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[3px] border-ink bg-orange-soft font-display text-lg font-bold">{n}</span>
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[3px] border-ink bg-orange-soft font-retro text-lg font-bold">{n}</span>
       <h2 className="text-3xl">{title}</h2>
       {hint && <p className="w-full pl-15 font-medium text-ink-soft sm:w-auto sm:pl-0">{hint}</p>}
     </div>

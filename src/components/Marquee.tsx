@@ -17,7 +17,7 @@ export function Marquee({
     <div className="flex shrink-0 items-center">
       {items.map((t) => (
         <Fragment key={t}>
-          <span className="px-5 font-display text-2xl whitespace-nowrap sm:text-3xl">{t}</span>
+          <span className="px-5 font-retro text-2xl whitespace-nowrap sm:text-3xl">{t}</span>
           <Sparkle c={star} className="w-5 shrink-0 sm:w-6" />
         </Fragment>
       ))}

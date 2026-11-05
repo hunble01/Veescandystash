@@ -2,31 +2,13 @@ import type { CSSProperties } from "react";
 import { GummyBear, Lollipop, PeachRing, Sparkle, WrappedCandy, candyColours } from "@/components/Candies";
 import { ButtonLink, Container, Squiggle } from "@/components/ui";
 import { site } from "@/config/site";
+import { InstagramIcon, TikTokIcon } from "./SocialIcons";
 
 // "Come join in on more fun!": a big, bold social band so the follow links
 // grab attention (Vee's request, 2026-10-29). Shown on the About page and on
 // the home page under "How it works". A full-width pink band with wavy,
 // icing-like edges (Vee, 2026-10-30: no boxy look), candies scattered over
 // it and arrows pointing at the buttons.
-
-// Small social glyphs. Shapes only, in the button's text colour.
-function InstagramIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg aria-hidden viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className={className}>
-      <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" />
-      <circle cx="12" cy="12" r="4.4" />
-      <circle cx="17.6" cy="6.4" r="1.3" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function TikTokIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg aria-hidden viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
-    </svg>
-  );
-}
 
 const socialLinks = [
   { label: "Instagram", url: site.social.instagram, Icon: InstagramIcon },
@@ -95,7 +77,7 @@ export function JoinTheFun({ className = "" }: { className?: string }) {
             <span className="inline-block -rotate-3 rounded-full border-[3px] border-ink bg-teal px-4 py-1 text-sm font-extrabold tracking-wide text-ink uppercase">
               Psst! Follow along
             </span>
-            <h2 id="join-fun" className="mt-5 font-display text-4xl leading-tight uppercase text-orange [text-shadow:3px_3px_0_var(--color-ink)] sm:text-6xl">
+            <h2 id="join-fun" className="mt-5 font-retro text-4xl leading-tight uppercase text-orange [text-shadow:3px_3px_0_var(--color-ink)] sm:text-6xl">
               Come join in on more{" "}
               <span className="relative inline-block text-teal">
                 fun!
