@@ -147,6 +147,11 @@ export function ThemeOrderForm({ occasion, themes, accent }: { occasion: string;
           </label>
         </div>
 
+        {/* Occasion pricing is quoted per order (Vee, 2026-11-04). */}
+        <p className="rounded-2xl border-2 border-teal bg-teal-soft px-4 py-3 text-ink">
+          <span className="font-extrabold">How pricing works:</span> occasion bags are priced by how much candy and customization you’d like.
+          Send your request and Vee will email you a quote. No commitment until you say yes.
+        </p>
         {step === "not_configured" && <DraftNote>Website preview: sending isn’t connected yet. Nothing was sent.</DraftNote>}
         {step === "error" && (
           <p role="alert" className="rounded-xl bg-pink-soft px-4 py-3 font-semibold text-pink-deep">Sorry, that didn’t send. Please try again in a moment.</p>

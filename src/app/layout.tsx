@@ -42,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       }}
       appearance={{
         variables: {
-          colorPrimary: "#e9652c",
+          colorPrimary: "#f07020",
           fontFamily: "var(--font-bricolage)",
           borderRadius: "1rem",
         },

@@ -17,20 +17,20 @@ const brainstormedSizes = (productId: string): SizeVariant[] =>
   }));
 
 // Build Your Own sizes chosen by Vee (2026-10-27). Weights are the pound
-// sizes converted to grams; prices are still to be set. Pick limits set by
+// sizes converted to grams. Prices set by Vee (2026-11-04); 5 lb became 4 lb. Pick limits set by
 // Vee (2026-10-29); the same candy can fill several picks. No pick limit
 // (null) means customers choose as many candies as they like.
 const builderSizes: SizeVariant[] = [
-  { label: "0.5 lb", grams: 227, picks: 6 },
-  { label: "1 lb", grams: 454, picks: 10 },
-  { label: "2 lb", grams: 907, picks: 12 },
-  { label: "5 lb", grams: 2268, picks: null },
-].map(({ label, grams, picks }) => ({
+  { label: "0.5 lb", grams: 227, picks: 6, price: 1599 },
+  { label: "1 lb", grams: 454, picks: 10, price: 2699 },
+  { label: "2 lb", grams: 907, picks: 12, price: 5199 },
+  { label: "4 lb", grams: 1814, picks: null, price: 8500 },
+].map(({ label, grams, picks, price }) => ({
   id: `build-your-own-${grams}g`,
   label,
   weightGrams: grams,
   pickAllowance: picks,
-  priceCents: null,
+  priceCents: price,
   photo: null,
   active: true,
 }));

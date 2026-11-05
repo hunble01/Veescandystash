@@ -10,7 +10,10 @@ export const readClient = sanityConfigured
       apiVersion,
       useCdn: !process.env.SANITY_API_READ_TOKEN,
       token: process.env.SANITY_API_READ_TOKEN,
-      perspective: "published",
+      // Local preview only: SANITY_PREVIEW_DRAFTS=1 in .env.local shows unpublished
+      // Studio drafts, so changes can be checked before they go live. Never
+      // set it on Netlify.
+      perspective: process.env.SANITY_PREVIEW_DRAFTS === "1" ? "drafts" : "published",
     })
   : null;
 

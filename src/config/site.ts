@@ -38,9 +38,10 @@ export const site = {
     handlingTime: "About 3 business days in the GTA" as string | null,
   },
 
-  // Sizes offered in the occasion/holiday and custom order forms (Vee, 2026-10-29).
+  // Sizes offered in the occasion/holiday and custom order forms (Vee, 2026-10-29;
+  // 5 lb became 4 lb on 2026-11-04).
   // 0.3 lb is for occasion and custom orders only, not Build Your Stash.
-  bagSizes: ["0.3 lb", "0.5 lb", "1 lb", "2 lb", "5 lb", "Smaller favour bags"],
+  bagSizes: ["0.3 lb", "0.5 lb", "1 lb", "2 lb", "4 lb", "Smaller favour bags"],
 
   customOrders: {
     minimumQuantity: 5 as number | null,

@@ -4,7 +4,7 @@
 import type { SVGProps } from "react";
 
 export const candyColours = {
-  orange: "#e9652c",
+  orange: "#f07020",
   pink: "#e85d82",
   teal: "#64beba",
   cream: "#faf1e2",

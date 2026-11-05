@@ -8,7 +8,8 @@
 */
 @theme {
   /* Brand colours sampled from Vee's logo (2026-11-04): orange, pink, teal
-     and the cream centre. */
+     and the cream centre. Orange then made a little more orange at Vee's
+     request (#e9652c to #f07020). */
   --color-cream: #faf1e2;
   --color-cream-deep: #f5e2c6;
   --color-white: #ffffff;
@@ -16,7 +17,7 @@
   --color-ink-soft: #6b5a50;
   --color-line: #ecdccb;
 
-  --color-orange: #e9652c;
+  --color-orange: #f07020;
   --color-orange-soft: #fde0cb;
   --color-orange-deep: #b9501a;
 

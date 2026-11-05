@@ -9,9 +9,9 @@ export const faq: FaqItem[] = [
     question: "How do I place an order?",
     answer:
       "Order right here on the website: build your own stash, pick a themed bag from Occasions, or send us a custom order for any event you like. Having trouble? Just email us.",
-    links: ["build", "occasions", "custom", "email", "phone"],
+    links: ["build", "occasions", "custom", "email"],
   },
-  { topic: "Ordering", question: "What sizes do your bags come in?", answer: "Our bags come in four sizes: 0.5 lb, 1 lb, 2 lb and 5 lb. Planning an occasion? We can make them smaller at your request, just let us know." },
+  { topic: "Ordering", question: "What sizes do your bags come in?", answer: "Our bags come in four sizes: 0.5 lb ($15.99), 1 lb ($26.99), 2 lb ($51.99) and 4 lb ($85.00). Planning an occasion? We can make them smaller at your request, just let us know." },
   {
     topic: "Ordering",
     question: "Can the candy in my bag vary?",
