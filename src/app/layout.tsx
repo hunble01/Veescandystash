@@ -1,19 +1,11 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Lobster, Shrikhand } from "next/font/google";
+import { Bricolage_Grotesque, Shrikhand } from "next/font/google";
 import { site } from "@/config/site";
 import "./globals.css";
 
-// Fonts chosen to match Vee's logo (2026-11-04): Lobster is the closest
-// Google font to the logo's "Candy Stash" script and is used for headings;
-// Shrikhand matches the chunky retro "Vee's" and is kept for ribbons,
-// numbers and badges. Bricolage Grotesque stays for easy-to-read body text.
-const lobster = Lobster({
-  variable: "--font-lobster",
-  subsets: ["latin"],
-  weight: "400",
-});
-
+// Headings: Shrikhand (Vee tried a logo-style script on 2026-11-04 and
+// preferred this). Body: Bricolage Grotesque.
 const shrikhand = Shrikhand({
   variable: "--font-shrikhand",
   subsets: ["latin"],
@@ -56,7 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         },
       }}
     >
-      <html lang="en-CA" className={`${lobster.variable} ${shrikhand.variable} ${bricolage.variable} h-full antialiased`}>
+      <html lang="en-CA" className={`${shrikhand.variable} ${bricolage.variable} h-full antialiased`}>
         <body className="min-h-full">{children}</body>
       </html>
     </ClerkProvider>
