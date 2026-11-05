@@ -225,3 +225,26 @@ h3 {
   }
 }
 
+
+/* Christmas page: falling snow and twinkling lights (ChristmasDecor.tsx). */
+.snowflake {
+  animation-name: snow-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes snow-fall {
+  0% { transform: translate3d(0, -5vh, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translate3d(28px, 50vh, 0) rotate(180deg); }
+  100% { transform: translate3d(-12px, 108vh, 0) rotate(360deg); opacity: 0.9; }
+}
+.christmas-bulb {
+  animation: twinkle 1.8s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .christmas-bulb { animation: none; }
+}
