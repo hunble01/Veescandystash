@@ -7,24 +7,26 @@
   Change them here and the whole site follows.
 */
 @theme {
-  --color-cream: #fff6ea;
-  --color-cream-deep: #fbe6cf;
+  /* Brand colours sampled from Vee's logo (2026-11-04): orange, pink, teal
+     and the cream centre. */
+  --color-cream: #faf1e2;
+  --color-cream-deep: #f5e2c6;
   --color-white: #ffffff;
   --color-ink: #2b1d17;
   --color-ink-soft: #6b5a50;
   --color-line: #ecdccb;
 
-  --color-orange: #f2762e;
+  --color-orange: #e9652c;
   --color-orange-soft: #fde0cb;
   --color-orange-deep: #b9501a;
 
-  --color-pink: #ef6f9f;
+  --color-pink: #e85d82;
   --color-pink-soft: #fde0ea;
   /* pink-light: between pink and pink-soft, for the Join the fun band. */
-  --color-pink-light: #f7a8c6;
+  --color-pink-light: #f3a5bb;
   --color-pink-deep: #b13a66;
 
-  --color-teal: #6dd3ca;
+  --color-teal: #64beba;
   /* Lightened from #1fa8a0 (Vee, 2026-10-30). Text on teal is ink, not white. */
   --color-teal-soft: #d4f1ed;
   --color-teal-deep: #0f6e69;

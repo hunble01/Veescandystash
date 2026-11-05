@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fff6ea",
+  themeColor: "#faf1e2",
 };
 
 // Bare document shell. The storefront chrome lives in ShopShell so the
@@ -41,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       }}
       appearance={{
         variables: {
-          colorPrimary: "#f2762e",
+          colorPrimary: "#e9652c",
           fontFamily: "var(--font-bricolage)",
           borderRadius: "1rem",
         },

@@ -6,7 +6,7 @@ export function Marquee({
   items,
   className = "",
   reverse = false,
-  star = "#fff6ea",
+  star = "#faf1e2",
 }: {
   items: string[];
   className?: string;

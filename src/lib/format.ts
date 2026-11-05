@@ -35,9 +35,9 @@ export const flavourLabel: Record<Product["flavour"], string> = {
 
 // Full class strings so Tailwind can see them.
 export const accentClasses: Record<Accent, { soft: string; deep: string; solid: string; dot: string }> = {
-  orange: { soft: "bg-orange-soft", deep: "text-orange-deep", solid: "bg-orange", dot: "#f2762e" },
+  orange: { soft: "bg-orange-soft", deep: "text-orange-deep", solid: "bg-orange", dot: "#e9652c" },
   pink: { soft: "bg-pink-soft", deep: "text-pink-deep", solid: "bg-pink", dot: "#ec6a99" },
-  teal: { soft: "bg-teal-soft", deep: "text-teal-deep", solid: "bg-teal", dot: "#6dd3ca" },
+  teal: { soft: "bg-teal-soft", deep: "text-teal-deep", solid: "bg-teal", dot: "#64beba" },
   red: { soft: "bg-holiday-red-soft", deep: "text-holiday-red-deep", solid: "bg-holiday-red", dot: "#c8202f" },
   green: { soft: "bg-holiday-green-soft", deep: "text-holiday-green-deep", solid: "bg-holiday-green", dot: "#17804a" },
   gold: { soft: "bg-holiday-gold-soft", deep: "text-holiday-gold-deep", solid: "bg-holiday-gold", dot: "#e8b931" },
