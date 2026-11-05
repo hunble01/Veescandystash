@@ -1,0 +1,68 @@
+// Site settings (brief §15 "Site setting").
+// Every `null` is a PLACEHOLDER: the page shows "coming soon" wording
+// instead of an invented value. Fill these in once Vee confirms them.
+
+export const site = {
+  name: "Vee’s Candy Stash",
+  slogan: "Every Sweet Tooth Needs a Stash.",
+  description:
+    "Sweet little candy bags, party-ready favours and custom candy for every occasion, from a small Ontario candy shop.",
+  region: "Ontario, Canada",
+
+  // Supplied logo file goes in /public (e.g. /public/logo.svg). Until then
+  // a labelled placeholder is shown; we never draw our own logo.
+  logo: null as { src: string; width: number; height: number } | null,
+
+  announcement: "New website in progress — products and prices are coming soon.",
+
+  contact: {
+    email: "contact@veescandystash.ca" as string | null,
+    phone: "647-713-2718" as string | null,
+  },
+
+  social: {
+    instagram: "https://www.instagram.com/VeesCandyStash/" as string | null,
+    tiktok: null as string | null,
+    facebook: null as string | null,
+  },
+
+  fulfilment: {
+    // Which options checkout offers. Empty until Vee decides, and checkout
+    // stays off until at least one is set.
+    methods: ["pickup", "delivery"] as ("pickup" | "delivery")[],
+    pickupArea: "Vaughan, Ontario" as string | null,
+    deliveryArea: "Worldwide" as string | null,
+    shipping: null as string | null,
+    handlingTime: "About 3 business days in the GTA" as string | null,
+  },
+
+  // Sizes offered in the occasion/holiday and custom order forms (Vee, 2026-10-29).
+  // 0.3 lb is for occasion and custom orders only, not Build Your Stash.
+  bagSizes: ["0.3 lb", "0.5 lb", "1 lb", "2 lb", "5 lb", "Smaller favour bags"],
+
+  customOrders: {
+    minimumQuantity: 5 as number | null,
+    leadTime: "10 days, depending on quantity" as string | null,
+    // Earliest date the occasion/holiday order form accepts, in days from today.
+    minNoticeDays: 10 as number | null,
+    deposit: null as string | null,
+  },
+
+  // Owner's on/off switch for taking orders. Even when true, checkout only
+  // opens once lib/readiness.ts finds Stripe keys, prices and a fulfilment
+  // method. Flip to true when policies are published and you're ready to sell.
+  checkoutEnabled: false,
+} as const;
+
+export const nav = [
+  { href: "/build-your-stash", label: "Build Your Stash" },
+  { href: "/occasions", label: "Occasions" },
+  { href: "/custom-orders", label: "Custom Orders" },
+  { href: "/about", label: "About" },
+  { href: "/policies", label: "Policies" },
+] as const;
+
+export const footerNav = [
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
+] as const;
