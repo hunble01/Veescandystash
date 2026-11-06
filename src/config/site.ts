@@ -25,11 +25,15 @@ export const site = {
     productSlug: "christmas-advent-calendar",
     href: "/shop/christmas-advent-calendar",
     eyebrow: "New for Christmas",
-    cta: "See it & add to bag",
-  } as { productSlug: string; href: string; eyebrow: string; cta: string } | null,
+    cta: "Advent Calendar",
+    // Line under the name, also on the product page (Vee, 2026-11-05).
+    subtitle: "Get yours before December 1st to start the countdown!",
+  } as { productSlug: string; href: string; eyebrow: string; cta: string; subtitle?: string } | null,
 
   contact: {
     email: "contact@veescandystash.ca" as string | null,
+    // How quickly Vee answers email (2026-11-05). Shown on Contact and Policies.
+    replyTime: "We usually reply within 3 business days." as string | null,
     // Vee only takes contact by email (2026-11-04); null hides every phone link.
     phone: null as string | null,
   },
@@ -67,6 +71,17 @@ export const site = {
   // opens once lib/readiness.ts finds Stripe keys, prices and a fulfilment
   // method. Flip to true when policies are published and you're ready to sell.
   checkoutEnabled: false,
+
+  // Welcome offer (Vee, 2026-11-05): new visitors see a pop-up; when they
+  // create an account we email them this code, and it takes the % off their
+  // FIRST order when typed in the cart (checked on the server). Set
+  // welcomeDiscountPercent to null to switch the whole offer off.
+  welcomeDiscountPercent: 5 as number | null,
+  welcomeCode: "5OFF!",
+
+  // Products hidden from the whole site (Vee, 2026-11-05: "take out ready
+  // made mixes"). Remove a slug here to bring that product back.
+  hiddenProductSlugs: ["signature-mixed-stash", "sour-stash", "sweet-stash", "sweet-and-sour-stash"] as readonly string[],
 } as const;
 
 export const nav = [

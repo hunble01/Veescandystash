@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { StashBuilder } from "./StashBuilder";
-import { ColourHeader } from "@/components/ColourHeader";
+import { BuildHeader } from "./BuildHeader";
 import { ButtonLink, Container } from "@/components/ui";
 import { getCandies, getProducts } from "@/lib/catalog";
 import { checkoutOpen } from "@/lib/readiness";
+import { TrackView } from "@/lib/recentlyViewed";
 
 export const metadata: Metadata = {
   title: "Build Your Stash",
@@ -17,9 +18,10 @@ export default async function BuildYourStashPage() {
 
   return (
     <>
-      <ColourHeader tag="Pick · Mix · Enjoy" title="Build Your" highlight="Stash!" intro="Choose your bag size, then fill it with the candies you love." />
+      <BuildHeader />
 
       <Container className="py-12">
+        {builder && <TrackView slug={builder.slug} />}
         {builder ? (
           // The builder reads the chosen bag from the address (?bag=…).
           <Suspense>

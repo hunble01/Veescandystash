@@ -39,14 +39,17 @@ function HeaderView({ pathname }: { pathname: string }) {
   return (
     <header className="sticky top-0 z-40">
       {site.announcement && (
-        <p className="border-b-[3px] border-ink bg-teal px-4 py-2 text-center text-sm font-bold text-ink">
-          {site.announcementHref ? (
-            <Link href={site.announcementHref} className="underline-offset-4 hover:underline">
-              {site.announcement} <span aria-hidden>→</span>
-            </Link>
-          ) : (
-            site.announcement
-          )}
+        // Teal bar; the words sit on a red label (Vee, 2026-11-05).
+        <p className="border-b-[3px] border-ink bg-teal px-3 py-1.5 text-center text-sm font-bold">
+          <span className="inline-block rounded-full border-2 border-ink bg-holiday-red px-3 py-0.5 text-white">
+            {site.announcementHref ? (
+              <Link href={site.announcementHref} className="underline-offset-4 hover:underline">
+                {site.announcement} <span aria-hidden>→</span>
+              </Link>
+            ) : (
+              site.announcement
+            )}
+          </span>
         </p>
       )}
       <div className="px-3 pt-3 sm:px-5">
@@ -118,8 +121,8 @@ function HeaderView({ pathname }: { pathname: string }) {
         <nav
           id="mobile-menu"
           aria-label="Main"
-          className="fixed inset-0 -z-10 overflow-y-auto bg-orange pt-36 lg:hidden"
-          style={{ backgroundImage: "repeating-conic-gradient(from 0deg at 50% 110%, #fde0cb55 0deg 8deg, transparent 8deg 16deg)" }}
+          className="fixed inset-0 -z-10 overflow-y-auto pt-36 lg:hidden"
+          style={{ backgroundColor: "#f6a26a", backgroundImage: "repeating-conic-gradient(from 0deg at 50% 110%, #fde0cb55 0deg 8deg, transparent 8deg 16deg)" }}
         >
           <ul className="flex flex-col gap-1 px-6 pb-16">
             {[...mobileNav, accountLink].map((item, i) => (
@@ -128,7 +131,7 @@ function HeaderView({ pathname }: { pathname: string }) {
                   href={item.href}
                   aria-current={isActive(item.href) ? "page" : undefined}
                   onClick={() => setOpen(false)}
-                  className="block py-2 font-display text-[2.6rem] leading-tight text-cream transition [text-shadow:3px_4px_0_var(--color-ink)] hover:translate-x-2 aria-[current=page]:text-ink aria-[current=page]:[text-shadow:none]"
+                  className="block py-1.5 font-display text-[2rem] leading-tight text-cream transition [text-shadow:3px_4px_0_var(--color-ink)] hover:translate-x-2 aria-[current=page]:text-ink aria-[current=page]:[text-shadow:none]"
                 >
                   {item.label}
                 </Link>

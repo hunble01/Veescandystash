@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { useState } from "react";
 import { GummyBear, candyColours as k } from "@/components/Candies";
@@ -7,10 +8,12 @@ import { Button, ButtonLink } from "@/components/ui";
 import { MAX_QTY, cart, useCart } from "@/lib/cart";
 import { accentClasses, describePicks, formatPrice } from "@/lib/format";
 
-export function CartView({ checkoutOpen }: { checkoutOpen: boolean }) {
+export function CartView({ checkoutOpen, welcomePercent }: { checkoutOpen: boolean; welcomePercent: number | null }) {
   const { lines, count, subtotalCents } = useCart();
+  const { isSignedIn } = useAuth();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [code, setCode] = useState("");
 
   async function checkout() {
     setStatus("loading");
@@ -18,7 +21,7 @@ export function CartView({ checkoutOpen }: { checkoutOpen: boolean }) {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lines: lines.map((l) => ({ productId: l.productId, sizeId: l.sizeId, candyIds: l.candies?.map((c) => c.id), qty: l.qty })) }),
+        body: JSON.stringify({ code: code.trim() || undefined, lines: lines.map((l) => ({ productId: l.productId, sizeId: l.sizeId, candyIds: l.candies?.map((c) => c.id), qty: l.qty })) }),
       });
       const body = await res.json();
       if (!res.ok || !body.url) throw new Error(body.error ?? "Checkout failed");
@@ -35,7 +38,7 @@ export function CartView({ checkoutOpen }: { checkoutOpen: boolean }) {
         <GummyBear c={k.pink} className="mx-auto w-24 -rotate-12" />
         <h2 className="mt-6 text-4xl">Your stash is empty.</h2>
         <p className="mt-3 text-lg font-medium text-ink-soft">Every sweet tooth needs one. Let’s fix that.</p>
-        <ButtonLink href="/shop" className="mt-8">Browse candy bags</ButtonLink>
+        <ButtonLink href="/build-your-stash" className="mt-8">Build your stash</ButtonLink>
       </div>
     );
   }
@@ -88,6 +91,25 @@ export function CartView({ checkoutOpen }: { checkoutOpen: boolean }) {
           </div>
         </dl>
         <p className="mt-3 text-sm font-medium text-ink-soft">Tax and pickup or delivery are confirmed at checkout.</p>
+        {/* Discount code + welcome offer reminder (Vee, 2026-11-05). The code is
+            checked on the server at checkout. */}
+        <label className="mt-5 block">
+          <span className="text-sm font-extrabold">Discount code</span>
+          <input
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="e.g. your welcome code"
+            autoComplete="off"
+            autoCapitalize="characters"
+            maxLength={40}
+            className="mt-1 block min-h-11 w-full rounded-full border-[3px] border-ink/80 bg-white px-4 font-bold uppercase placeholder:font-medium placeholder:normal-case"
+          />
+        </label>
+        {welcomePercent && !isSignedIn ? (
+          <p className="mt-3 text-sm font-bold">
+            🍬 <Link href="/sign-up" className="text-pink-deep underline underline-offset-4">Create an account</Link> and we’ll email you a code for {welcomePercent}% off your first order.
+          </p>
+        ) : null}
         {checkoutOpen ? (
           <Button type="button" onClick={checkout} disabled={status === "loading"} className="mt-6 w-full">
             {status === "loading" ? "Opening secure checkout…" : "Checkout securely"}

@@ -1,6 +1,6 @@
 import type Stripe from "stripe";
 import { site } from "@/config/site";
-import { getCustomer } from "@/lib/account";
+import { getCustomer, getOrders } from "@/lib/account";
 import { getCandies, getProducts } from "@/lib/catalog";
 import { describePicks } from "@/lib/format";
 import { MAX_PICKS, MAX_QTY } from "@/lib/limits";
@@ -19,9 +19,11 @@ export async function POST(req: Request) {
   if (!stripe || checkoutBlockers().length) return fail("Online ordering isn’t open yet.", 503);
 
   let lines: IncomingLine[];
+  let code = "";
   try {
     const body = await req.json();
     lines = Array.isArray(body?.lines) ? body.lines : [];
+    code = typeof body?.code === "string" ? body.code.trim().slice(0, 40) : "";
   } catch {
     return fail("Invalid request.");
   }
@@ -77,12 +79,31 @@ export async function POST(req: Request) {
   // their account. Guests check out exactly as before.
   const customer = await getCustomer();
 
+  // Welcome code (Vee, 2026-11-05): emailed to new accounts; takes
+  // site.welcomeDiscountPercent off the FIRST order. Checked here on the
+  // server, so it can't be used by guests or twice.
+  let discounts: Stripe.Checkout.SessionCreateParams.Discount[] = [];
+  const percent = site.welcomeDiscountPercent;
+  if (code) {
+    if (!percent || code.toUpperCase() !== site.welcomeCode.toUpperCase()) return fail("That code isn’t valid. Please check it and try again.");
+    if (!customer) return fail("Please log in to your account to use this code.", 401);
+    if ((await getOrders(customer)).length > 0) return fail("This code is for your first order only.");
+    const couponId = `WELCOME${percent}`;
+    try {
+      await stripe.coupons.retrieve(couponId);
+    } catch {
+      await stripe.coupons.create({ id: couponId, percent_off: percent, duration: "once", name: `Welcome: ${percent}% off your first order` });
+    }
+    discounts = [{ coupon: couponId }];
+  }
+
   const methods = site.fulfilment.methods;
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(req.url).origin;
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: lineItems,
+    ...(discounts.length ? { discounts } : {}),
     phone_number_collection: { enabled: true },
     ...(methods.includes("delivery") ? { shipping_address_collection: { allowed_countries: ["CA"] } } : {}),
     custom_fields:

@@ -22,7 +22,10 @@ export default function ContactPage() {
           <div className="rounded-[var(--radius-card)] bg-white p-6 border-[3px] border-ink shadow-[var(--shadow-pop)]">
             <h2 className="text-xl font-semibold">Email</h2>
             {site.contact.email ? (
-              <a href={`mailto:${site.contact.email}`} className="mt-1 block text-teal-deep underline">{site.contact.email}</a>
+              <>
+                <a href={`mailto:${site.contact.email}`} className="mt-1 block text-teal-deep underline">{site.contact.email}</a>
+                {site.contact.replyTime && <p className="mt-2 text-sm font-semibold text-ink-soft">{site.contact.replyTime}</p>}
+              </>
             ) : (
               <p className="mt-1 text-ink-soft">Coming soon.</p>
             )}

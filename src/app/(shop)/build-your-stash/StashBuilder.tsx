@@ -36,10 +36,12 @@ function StepHeading({ n, title, hint }: { n: number; title: string; hint?: Reac
   );
 }
 
-function Photo({ src, alt, label, accent }: { src: string | null; alt: string; label: string; accent: "orange" | "pink" | "teal" }) {
+// `round`: Vee's candy photos are cut to their round dish, so they sit
+// inside the tile with a soft shadow instead of filling it.
+function Photo({ src, alt, label, accent, round = false }: { src: string | null; alt: string; label: string; accent: "orange" | "pink" | "teal"; round?: boolean }) {
   return src ? (
     <div className="relative aspect-square overflow-hidden rounded-[calc(var(--radius-card)-0.5rem)] bg-cream">
-      <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 18rem, 45vw" className="object-cover" />
+      <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 18rem, 45vw" className={round ? "object-contain p-2 drop-shadow-[0_4px_6px_rgb(43_29_23/0.25)]" : "object-cover"} />
     </div>
   ) : (
     <PhotoPlaceholder accent={accent} className="aspect-square" label={label} />
@@ -278,7 +280,7 @@ export function StashBuilder({ product, candies, orderingOpen }: { product: Prod
                       aria-label={soldOut ? `${c.name}, sold out` : `Add ${c.name}${n > 0 ? ` (${n} in your bag)` : ""}`}
                       className="flex flex-col text-left focus-visible:outline-3 focus-visible:outline-teal disabled:cursor-not-allowed"
                     >
-                      <Photo src={c.photo} alt="" label="Photo soon" accent={c.category === "sour" ? "teal" : "pink"} />
+                      <Photo round src={c.photo} alt="" label="Photo soon" accent={c.category === "sour" ? "teal" : "pink"} />
                       <span className="mt-3 px-2 text-lg leading-tight font-extrabold">{c.name}</span>
                       <span className="px-2 pb-2 text-sm font-semibold text-ink-soft">
                         {soldOut ? "Sold out" : categoryLabel[c.category]}

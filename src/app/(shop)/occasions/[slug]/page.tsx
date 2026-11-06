@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { HolidayBand } from "@/components/HolidayBand";
 import { PageSkeleton } from "@/components/PageSkeleton";
-import { PhotoPlaceholder } from "@/components/PhotoPlaceholder";
+import { OccasionPicture } from "@/components/CandyCollage";
 import { ThemeOrderForm } from "@/components/ThemeOrderForm";
 import { ButtonLink, Container, Eyebrow } from "@/components/ui";
 import { accentClasses } from "@/lib/format";
@@ -40,8 +40,8 @@ async function OccasionContent({ params }: { params: PageProps<"/occasions/[slug
   return (
     <>
       <section className={a.soft}>
-        <Container className="grid items-center gap-8 py-10 sm:py-14 lg:grid-cols-2">
-          <div>
+        <Container className={`grid items-center gap-8 py-10 sm:py-14 lg:grid-cols-2`}>
+          <div className="max-w-3xl">
             <nav aria-label="Breadcrumb" className="mb-4 text-sm text-ink-soft">
               <Link href="/occasions" className="hover:text-ink">Occasions</Link> <span aria-hidden>/</span> {occasion.shortName}
             </nav>
@@ -56,7 +56,8 @@ async function OccasionContent({ params }: { params: PageProps<"/occasions/[slug
               </ButtonLink>
             )}
           </div>
-          <PhotoPlaceholder accent={occasion.accent} className="aspect-[4/3] bg-white/40" label={`${occasion.shortName} photo coming soon`} />
+          {/* Vee's photo when she adds one, otherwise a big icon (2026-11-05) */}
+          <OccasionPicture slug={occasion.slug} name={occasion.shortName} accent={occasion.accent} banner={occasion.bannerImage} />
         </Container>
       </section>
 

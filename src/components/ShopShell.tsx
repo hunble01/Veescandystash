@@ -2,6 +2,8 @@ import { Suspense, type ReactNode } from "react";
 import { Footer } from "./Footer";
 import { Header, HeaderFallback } from "./Header";
 import { RevealObserver } from "./RevealObserver";
+import { WelcomePopup } from "./WelcomePopup";
+import { site } from "@/config/site";
 
 // Storefront chrome: header, footer, grain + dot background, scroll reveals.
 export function ShopShell({ children }: { children: ReactNode }) {
@@ -20,6 +22,11 @@ export function ShopShell({ children }: { children: ReactNode }) {
       <Suspense fallback={null}>
         <RevealObserver />
       </Suspense>
+      {site.welcomeDiscountPercent ? (
+        <Suspense fallback={null}>
+          <WelcomePopup percent={site.welcomeDiscountPercent} />
+        </Suspense>
+      ) : null}
     </div>
   );
 }

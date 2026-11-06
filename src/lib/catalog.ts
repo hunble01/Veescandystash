@@ -1,9 +1,11 @@
 import { cacheLife } from "next/cache";
 import { candies as localCandies } from "@/data/candies";
+import { candyName, candyPhoto } from "@/data/candyPhotos";
 import { faq as localFaq } from "@/data/faq";
 import { occasions as localOccasions, seasonalCollections as localSeasonal } from "@/data/occasions";
 import { products as localProducts } from "@/data/products";
 import { readClient } from "@/sanity/client";
+import { site } from "@/config/site";
 import type { CandyOption, FaqItem, Occasion, Product, SeasonalCollection } from "./types";
 
 // One place pages get catalogue content from. Reads Sanity when it's
@@ -48,8 +50,9 @@ const FAQ = `*[_type == "faqItem"] | order(coalesce(sortOrder, 999) asc){ questi
 export async function getProducts(): Promise<Product[]> {
   "use cache";
   cacheLife("minutes");
-  if (!readClient) return localProducts.filter((p) => p.active);
-  const docs = await readClient.fetch<SanityProduct[]>(PRODUCTS);
+  const shown = (p: { slug: string }) => !site.hiddenProductSlugs.includes(p.slug);
+  if (!readClient) return localProducts.filter((p) => p.active && shown(p));
+  const docs = (await readClient.fetch<SanityProduct[]>(PRODUCTS)).filter(shown);
   return docs.map((d) => ({
     ...d,
     sizes: (d.sizes ?? []).map((s) => ({
@@ -100,11 +103,12 @@ export async function getFaq(): Promise<FaqItem[]> {
 export async function getCandies(): Promise<CandyOption[]> {
   "use cache";
   cacheLife("minutes");
-  if (!readClient) return localCandies;
+  if (!readClient) return localCandies.map((c) => ({ ...c, name: candyName(c.id, c.name), photo: c.photo ?? candyPhoto(c.id) }));
   const docs = await readClient.fetch<SanityCandy[]>(CANDIES);
   return docs.map(({ extraCharge, ...d }) => ({
     ...d,
-    photo: d.photo ?? null,
+    name: candyName(d.id, d.name),
+    photo: d.photo ?? candyPhoto(d.id),
     ingredientsAllergens: d.ingredientsAllergens ?? null,
     inStock: d.inStock ?? null,
     extraChargeCents: toCents(extraCharge),

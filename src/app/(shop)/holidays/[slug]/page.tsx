@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { OccasionPicture } from "@/components/CandyCollage";
 import { PageSkeleton } from "@/components/PageSkeleton";
-import { PhotoPlaceholder } from "@/components/PhotoPlaceholder";
 import { ThemeOrderForm } from "@/components/ThemeOrderForm";
 import { ButtonLink, Container, Eyebrow } from "@/components/ui";
 import { accentClasses, collectionStatusLabel } from "@/lib/format";
@@ -46,7 +46,7 @@ async function HolidayContent({ params }: { params: PageProps<"/holidays/[slug]"
       <section className={xmas ? "relative bg-holiday-green-soft" : a.soft}>
         {xmas && <ChristmasLights className="absolute inset-x-0 top-0" />}
         <Container className={`grid items-center gap-8 py-10 sm:py-14 lg:grid-cols-2 ${xmas ? "pt-16 sm:pt-20" : ""}`}>
-          <div>
+          <div className="max-w-3xl">
             <nav aria-label="Breadcrumb" className="mb-4 text-sm text-ink-soft">
               <Link href="/occasions" className="hover:text-ink">Occasions</Link> <span aria-hidden>/</span>{" "}
               <Link href="/occasions/holidays" className="hover:text-ink">Holidays</Link> <span aria-hidden>/</span> {holiday.name}
@@ -57,7 +57,7 @@ async function HolidayContent({ params }: { params: PageProps<"/holidays/[slug]"
             {holiday.orderCutoff && <p className="mt-3 font-extrabold">Order by {holiday.orderCutoff}</p>}
             {!closed && <ButtonLink href="#order" className="mt-7">Order {holiday.name} favours</ButtonLink>}
           </div>
-          <PhotoPlaceholder accent={holiday.accent} className="aspect-[4/3] bg-white/40" label={`${holiday.name} photo coming soon`} />
+          <OccasionPicture slug={holiday.slug} name={holiday.name} accent={holiday.accent} />
         </Container>
       </section>
       {xmas && <CandyCaneStripe />}

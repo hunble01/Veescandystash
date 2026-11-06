@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <circle cx="200" cy="232" r="172" fill="#f9c9a8"/>
+  <g stroke="#2b1d17" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M180.9 331.1 Q164.1 340.9 155.0 321.8 Q136.4 326.9 131.8 305.4 Q112.4 305.5 112.7 282.9 Q93.5 277.8 99.0 255.7 Q81.0 245.4 91.4 225.4 Q75.9 210.3 90.4 193.8 Q78.7 174.8 96.1 163.0 Q89.1 141.4 108.1 134.7 Q106.2 112.1 125.7 110.6 Q128.9 88.7 147.8 92.3 Q155.7 72.4 173.1 80.9 Q184.9 64.0 200.0 77.0 Q215.1 64.0 226.9 80.9 Q244.3 72.4 252.2 92.3 Q271.1 88.7 274.3 110.6 Q293.8 112.1 291.9 134.7 Q310.9 141.4 303.9 163.0 Q321.3 174.8 309.6 193.8 Q324.1 210.3 308.6 225.4 Q319.0 245.4 301.0 255.7 Q306.5 277.8 287.3 282.9 Q287.6 305.5 268.2 305.4 Q263.6 326.9 245.0 321.8 Q235.9 340.9 219.1 331.1 Z" fill="#3b2418"/>
+    <!-- top -->
+    <!-- neck -->
+    <path d="M181 250 L181 312 L219 312 L219 250 Z" fill="#eab89c"/>
+    <path d="M74 500 C76 380 116 316 166 302 Q200 332 234 302 C284 316 324 380 326 500 Z" fill="#64beba"/>
+    <!-- apron -->
+    <path d="M154 334 L172 300" fill="none" stroke="#e85d82" stroke-width="11"/>
+    <path d="M246 334 L228 300" fill="none" stroke="#e85d82" stroke-width="11"/>
+    <path d="M146 334 Q200 324 254 334 L270 500 L130 500 Z" fill="#e85d82"/>
+    <path d="M156 344 Q200 336 244 344" fill="none" stroke="#f6a6bf" stroke-width="2.5" stroke-dasharray="6 6"/>
+    <!-- ears -->
+    <ellipse cx="141" cy="205" rx="9" ry="13" fill="#f6d3bc"/>
+    <ellipse cx="259" cy="205" rx="9" ry="13" fill="#f6d3bc"/>
+    <!-- face -->
+    <path d="M142 192 C142 142 168 122 200 122 C232 122 258 142 258 192 C258 238 232 266 200 266 C168 266 142 238 142 192 Z" fill="#f6d3bc"/>
+  </g>
+  <!-- front hair: side part, swept to the sides, forehead showing -->
+  <path d="M134 214 C126 150 152 106 202 102 C254 100 280 144 268 214 C262 178 252 154 226 136 C204 152 170 150 150 170 C140 182 136 198 134 214 Z" fill="#3b2418" stroke="#2b1d17" stroke-width="4" stroke-linejoin="round"/>
+  <!-- curl texture -->
+  <g fill="none" stroke="#5e3a26" stroke-width="3" stroke-linecap="round">
+    <path d="M170 118 q14 -8 26 2"/><path d="M228 116 q12 2 18 14"/><path d="M156 140 q-6 12 -2 24"/>
+    <path d="M108 236 q8 -10 18 -4"/><path d="M112 290 q8 -8 16 -2"/><path d="M276 236 q8 -10 18 -2"/><path d="M272 290 q8 -8 16 2"/>
+    <path d="M118 182 q4 -12 16 -14"/><path d="M276 178 q-2 -12 -14 -16"/>
+  </g>
+  <!-- eyebrows -->
+  <g fill="none" stroke="#3b2418" stroke-width="4.5" stroke-linecap="round">
+    <path d="M166 178 q12 -8 24 -2"/><path d="M210 176 q12 -6 24 2"/>
+  </g>
+  <!-- eyes -->
+  <ellipse cx="178" cy="198" rx="6" ry="8" fill="#2b1d17"/><ellipse cx="222" cy="198" rx="6" ry="8" fill="#2b1d17"/>
+  <circle cx="180" cy="195" r="2.2" fill="#fff"/><circle cx="224" cy="195" r="2.2" fill="#fff"/>
+  <g stroke="#2b1d17" stroke-width="3" stroke-linecap="round"><path d="M172 191 l-5 -4"/><path d="M228 191 l5 -4"/></g>
+  <!-- nose -->
+  <path d="M200 206 q-5 12 2 15" fill="none" stroke="#eab89c" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- cheeks -->
+  <ellipse cx="164" cy="222" rx="11" ry="7" fill="#e85d82" opacity="0.35"/><ellipse cx="236" cy="222" rx="11" ry="7" fill="#e85d82" opacity="0.35"/>
+  <!-- smile -->
+  <path d="M183 232 Q200 252 217 232 Q200 238 183 232 Z" fill="#9b3040" stroke="#2b1d17" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M187 234 Q200 239 213 234 L212 237 Q200 241 188 237 Z" fill="#fff"/>
+</svg>

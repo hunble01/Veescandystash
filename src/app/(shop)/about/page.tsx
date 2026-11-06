@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JoinTheFun } from "@/components/JoinTheFun";
-import { PhotoPlaceholder } from "@/components/PhotoPlaceholder";
+import Image from "next/image";
+import { GummyBear, JellyBean, Lollipop, PeachRing, SmileyCandy, Sparkle, WrappedCandy, candyColours as k } from "@/components/Candies";
 import { Container, Eyebrow } from "@/components/ui";
 import { site } from "@/config/site";
 
@@ -13,7 +14,30 @@ export default function AboutPage() {
   return (
     <>
       <Container className="grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-2 lg:gap-16">
-        <PhotoPlaceholder accent="orange" className="aspect-[4/5]" label="Photo of Vee coming soon" />
+        {/* Cartoon of Vee until she takes a real photo (2026-11-05): light skin,
+            medium dark-brown curly hair, pink apron. Swap for a photo later. */}
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-card)] border-[3px] border-ink bg-orange-soft shadow-[var(--shadow-pop-lg)]">
+          <Image src="/vee-illustration.svg" alt="Cartoon drawing of Vee in her pink apron" fill sizes="(min-width: 1024px) 520px, 92vw" className="object-cover" unoptimized />
+          {/* Vee's real logo as a patch on the apron (2026-11-05) */}
+          {site.logo && (
+            <Image
+              src={site.logo.src}
+              alt=""
+              width={site.logo.width}
+              height={site.logo.height}
+              className="absolute top-[72.4%] left-[38%] w-[24%] -rotate-6 rounded-full border-[3px] border-ink"
+            />
+          )}
+          <div aria-hidden className="pointer-events-none absolute inset-0">
+            <Lollipop c={k.orange} className="absolute top-[6%] left-[6%] w-[16%] -rotate-12" />
+            <WrappedCandy c={k.teal} className="absolute top-[10%] right-[6%] w-[18%] rotate-12" />
+            <GummyBear c={k.pink} className="absolute top-[40%] left-[4%] w-[11%] -rotate-6" />
+            <PeachRing className="absolute top-[38%] right-[5%] w-[13%] rotate-6" />
+            <JellyBean c={k.orange} className="absolute top-[24%] left-[12%] w-[7%] rotate-45" />
+            <SmileyCandy c={k.teal} className="absolute top-[26%] right-[7%] w-[9%]" />
+            <Sparkle c={k.pink} className="absolute top-[3%] left-[44%] w-[7%]" />
+          </div>
+        </div>
         <div>
           <Eyebrow>About</Eyebrow>
           <h1 className="text-4xl font-semibold text-pink sm:text-5xl">Hi, I’m Vee.</h1>

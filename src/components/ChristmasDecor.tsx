@@ -13,9 +13,11 @@ const flakes = [
   [93, 10, -4, 18], [6, 17, -13, 15], [36, 18, -15, 12], [66, 17, -14, 20], [96, 16, -6, 10],
 ] as const;
 
-export function Snowfall() {
+// `contained` keeps the snow inside its parent section (which needs
+// `relative overflow-hidden`) instead of falling over the whole page.
+export function Snowfall({ contained = false }: { contained?: boolean }) {
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-30 overflow-hidden motion-reduce:hidden">
+    <div aria-hidden className={`pointer-events-none inset-0 overflow-hidden motion-reduce:hidden ${contained ? "absolute z-0" : "fixed z-30"}`}>
       {flakes.map(([left, dur, delay, size], i) => (
         <span
           key={i}

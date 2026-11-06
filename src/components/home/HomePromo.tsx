@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { Sparkle, candyColours as k } from "@/components/Candies";
+import { Sparkle } from "@/components/Candies";
+import { CandyCaneStripe, Snowfall } from "@/components/ChristmasDecor";
 import { ButtonLink, Container } from "@/components/ui";
 import { site } from "@/config/site";
 import { getProducts } from "@/lib/catalog";
@@ -20,10 +21,17 @@ export async function HomePromo() {
   const photo1 = product.photos[0];
 
   return (
-    <section aria-labelledby="promo-title" className="relative overflow-hidden border-y-[3px] border-ink bg-holiday-red-soft py-16 sm:py-20">
-      <Sparkle aria-hidden c={k.pink} className="absolute top-8 left-[6%] w-8" />
-      <Sparkle aria-hidden c={k.teal} className="absolute right-[8%] bottom-10 w-6" />
-      <Container className="grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]">
+    <section aria-labelledby="promo-title" className="relative overflow-hidden">
+      <CandyCaneStripe />
+      {/* Snowy Christmas-night green (Vee, 2026-11-05: "looks more Christmas") */}
+      <div
+        className="relative overflow-hidden py-16 sm:py-20"
+        style={{ background: "radial-gradient(ellipse at 50% 0%, var(--color-holiday-green) 0%, var(--color-holiday-green-deep) 70%)" }}
+      >
+      <Snowfall contained />
+      <Sparkle aria-hidden c="#e8b931"className="absolute top-8 left-[6%] w-8" />
+      <Sparkle aria-hidden c="#fff" className="absolute right-[8%] bottom-10 w-6" />
+      <Container className="relative z-10 grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]">
         {/* First photo, tilted like a snapshot; tapping it opens the product */}
         <div className="relative mx-auto w-full max-w-lg">
           {photo1 ? (
@@ -37,17 +45,22 @@ export async function HomePromo() {
         </div>
 
         <div className="text-center lg:text-left">
-          <p className="text-sm font-extrabold tracking-[0.18em] text-holiday-red-deep uppercase">🎄 {promo.eyebrow}</p>
-          <h2 id="promo-title" className="mt-3 text-[clamp(2.3rem,7vw,3.75rem)] text-holiday-red">
+          <p className="text-sm font-extrabold tracking-[0.18em] text-holiday-gold uppercase">🎄 {promo.eyebrow}</p>
+          <h2 id="promo-title" className="mt-3 text-[clamp(2.3rem,7vw,3.75rem)] text-white [text-shadow:3px_3px_0_var(--color-holiday-red-deep)]">
             {product.name}
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-lg font-semibold text-ink-soft lg:mx-0">{product.description}</p>
+          {promo.subtitle && (
+            <p className="mt-3 inline-block -rotate-1 rounded-full border-[3px] border-ink bg-holiday-gold px-4 py-1.5 font-extrabold text-ink shadow-[var(--shadow-pop)]">
+              🗓️ {promo.subtitle}
+            </p>
+          )}
+          <p className="mx-auto mt-4 max-w-md text-lg font-semibold text-white/90 lg:mx-0">{product.description}</p>
           {size && (
             <p className="mt-6 flex items-baseline justify-center gap-3 lg:justify-start">
-              <span className="font-display text-5xl text-orange" style={{ textShadow: "2px 3px 0 var(--color-ink)" } as CSSProperties}>
+              <span className="font-display text-5xl text-holiday-gold" style={{ textShadow: "2px 3px 0 var(--color-ink)" } as CSSProperties}>
                 {formatPrice(size.priceCents)}
               </span>
-              <span className="font-bold text-ink-soft">{size.label} of surprises</span>
+              <span className="font-bold text-white/85">{size.label} of surprises</span>
             </p>
           )}
           <ButtonLink href={promo.href} className="mt-7">
@@ -55,6 +68,8 @@ export async function HomePromo() {
           </ButtonLink>
         </div>
       </Container>
+      </div>
+      <CandyCaneStripe />
     </section>
   );
 }
