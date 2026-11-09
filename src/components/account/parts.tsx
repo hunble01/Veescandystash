@@ -18,8 +18,15 @@ export const isOrderOpen = (o: AccountOrder) => !["done", "cancelled"].includes(
 export const isRequestOpen = (r: AccountRequest) => !["booked", "closed"].includes(r.status);
 
 export function orderSteps(o: AccountOrder) {
+  // e-Transfer / cash orders get two extra steps before packing.
+  const manual = o.paymentMethod === "etransfer" || o.paymentMethod === "cash";
   return [
-    { key: "new", label: "Received" },
+    ...(manual
+      ? [
+          { key: "awaiting_payment", label: o.paymentMethod === "cash" ? "Received (cash at pickup)" : "Waiting for payment" },
+          { key: "paid", label: "Paid" },
+        ]
+      : [{ key: "new", label: "Received" }]),
     { key: "packed", label: "Packed" },
     { key: "ready", label: o.fulfilment === "pickup" ? "Ready for pickup" : o.fulfilment === "delivery" ? "Out for delivery" : "Ready" },
     { key: "done", label: o.fulfilment === "pickup" ? "Picked up" : o.fulfilment === "delivery" ? "Delivered" : "Complete" },

@@ -15,7 +15,7 @@ export default async function CartPage() {
     <>
       <PageHeader eyebrow="Your cart" title="Your stash." />
       <Container className="pb-20">
-        <CartView checkoutOpen={blockers.length === 0} welcomePercent={site.welcomeDiscountPercent} />
+        <CartView checkoutOpen={blockers.length === 0} welcomePercent={site.welcomeDiscountPercent} paymentMode={site.payments.mode} />
         <CartSuggestions products={products} />
         {/* Only shown while developing, so customers never see setup notes. */}
         {process.env.NODE_ENV !== "production" && blockers.length > 0 && (

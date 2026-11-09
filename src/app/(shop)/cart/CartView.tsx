@@ -2,20 +2,38 @@
 
 import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { GummyBear, candyColours as k } from "@/components/Candies";
 import { Button, ButtonLink } from "@/components/ui";
-import { MAX_QTY, cart, useCart } from "@/lib/cart";
+import { MAX_QTY, cart, saveCode, useCart, useSavedCode } from "@/lib/cart";
 import { accentClasses, describePicks, formatPrice } from "@/lib/format";
 
-export function CartView({ checkoutOpen, welcomePercent }: { checkoutOpen: boolean; welcomePercent: number | null }) {
+export function CartView({
+  checkoutOpen,
+  welcomePercent,
+  paymentMode,
+}: {
+  checkoutOpen: boolean;
+  welcomePercent: number | null;
+  paymentMode: "manual" | "stripe";
+}) {
   const { lines, count, subtotalCents } = useCart();
   const { isSignedIn } = useAuth();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
-  const [code, setCode] = useState("");
+  // A code typed earlier this visit is kept (e.g. coming back from the order page).
+  const saved = useSavedCode();
+  const [typed, setCode] = useState<string | null>(null);
+  const code = typed ?? saved;
+  const router = useRouter();
 
   async function checkout() {
+    if (paymentMode === "manual") {
+      saveCode(code);
+      router.push("/checkout");
+      return;
+    }
     setStatus("loading");
     try {
       const res = await fetch("/api/checkout", {
@@ -90,7 +108,9 @@ export function CartView({ checkoutOpen, welcomePercent }: { checkoutOpen: boole
             <dd className="font-extrabold">{formatPrice(subtotalCents)}</dd>
           </div>
         </dl>
-        <p className="mt-3 text-sm font-medium text-ink-soft">Tax and pickup or delivery are confirmed at checkout.</p>
+        <p className="mt-3 text-sm font-medium text-ink-soft">
+          {paymentMode === "manual" ? "Choose pickup or delivery on the next step. Pay by e-Transfer, or cash at pickup." : "Tax and pickup or delivery are confirmed at checkout."}
+        </p>
         {/* Discount code + welcome offer reminder (Vee, 2026-11-05). The code is
             checked on the server at checkout. */}
         <label className="mt-5 block">
@@ -112,7 +132,7 @@ export function CartView({ checkoutOpen, welcomePercent }: { checkoutOpen: boole
         ) : null}
         {checkoutOpen ? (
           <Button type="button" onClick={checkout} disabled={status === "loading"} className="mt-6 w-full">
-            {status === "loading" ? "Opening secure checkout…" : "Checkout securely"}
+            {paymentMode === "manual" ? "Continue to order" : status === "loading" ? "Opening secure checkout…" : "Checkout securely"}
           </Button>
         ) : (
           <p className="mt-6 rounded-2xl border-2 border-dashed border-ink/40 bg-white/70 p-4 text-center font-bold">Online ordering coming soon</p>

@@ -193,3 +193,19 @@ Last updated: 2026-10-26
 - **2026-11-05 — Second calendar photo only on the product page** (Vee). The home promo and the Christmas page card show just the first photo, and tapping either opens the calendar's own page (`/shop/christmas-advent-calendar`). That page shows both photos (big photo plus tappable thumbnails) with the quantity and Add to bag button. The top bar and the "See it & add to bag" buttons go straight there. Product pages now show real Studio photos (`ProductGallery`) instead of placeholders whenever a product has photos.
 - **2026-11-05 — Calendar description** now also says it's a fun way to try lots of different candies (Sanity draft).
 - **2026-11-05 — Christmas page decorated** (Vee: "snow flakes and some red and green"): gently falling white snowflakes over the whole page (they stop for visitors who've turned on reduced motion), a string of twinkling red, green and gold Christmas lights across the top, a light green header with "Christmas" in red, red-and-white candy-cane stripes between sections, and a soft red "Christmas specials" section with a green heading. Only the Christmas page gets this (`ChristmasDecor.tsx`; switched on by the `christmas` slug).
+- **2026-11-08 — Payments at launch: e-Transfer and cash (Vee's choice), Stripe later. BUILT locally, not published.**
+  - Cart → "Continue to order" → `/checkout`: name, email, phone; pickup in Vaughan (free) or delivery; e-Transfer, or cash for pickup only. Nothing is charged online.
+  - Delivery (Vee: "use your suggestions"): Vaughan $6, nearby GTA $12, free over $75. "Worldwide" removed. All in `site.fulfilment.deliveryZones` / `freeDeliveryOverCents`.
+  - After ordering: an order number (VCS-XXXXXX) and e-Transfer instructions (amount, vpanetta03@icloud.com, number in the message). The e-Transfer email appears only there and on the customer's own order page.
+  - Studio: new statuses ⏳ Awaiting payment and 💰 Paid, a "Waiting for payment" list, and "To pack (paid)". Vee taps Paid once the money is in her bank.
+  - The welcome code works the same way (checked on the server). Prices are checked on the server (`src/lib/pricing.ts`, shared with the Stripe route).
+  - Stripe (sandbox) is built but off: `site.payments.mode = "stripe"` switches back.
+  - `CHECKOUT_PREVIEW=1` in `.env.local` opens ordering locally only. To go live, set `checkoutEnabled: true`.
+  - Tested at phone width with a test order, which was then deleted.
+  - Still open: HST (not registered; don't charge until there's a CRA number); Sanity FAQ still says worldwide delivery and pay at checkout (update before launch); real policies.
+- **2026-11-08 — Studio made easier (Vee's request). Local, not published.**
+  - **🏠 Start here** page (`src/sanity/StartHere.tsx`): live "to do" boxes for waiting for payment, ready to pack, waiting for pickup/delivery, new custom requests and messages to answer. Each item opens with one tap, plus a short "how things move" guide.
+  - **One-tap next-step button** on every order, request and message (`src/sanity/actions.tsx`), e.g. "💰 Payment received" → "📦 Mark as packed" → "🛍️ Ready for pickup" → "✅ Picked up". It saves and publishes in one go.
+  - **Menu regrouped** into To do / Everything / My shop. Order list rows show payment and pickup/delivery.
+  - Studio on the live site needs `https://veescandystash.ca` (and www) added in sanity.io/manage → API → CORS origins with "Allow credentials". Vee is doing that herself (the token can't).
+- **2026-11-08 — Emails are NOT being sent.** `RESEND_API_KEY` is empty locally and on Netlify, so forms only save to the Studio inbox. 1 custom request (Birthday, 2026-11-08 evening) sits in the Studio and was never emailed. Fix: Resend account and key; NOTIFY_EMAIL_TO is contact@veescandystash.ca, to be confirmed with Vee.

@@ -49,9 +49,28 @@ export const site = {
     // stays off until at least one is set.
     methods: ["pickup", "delivery"] as ("pickup" | "delivery")[],
     pickupArea: "Vaughan, Ontario" as string | null,
-    deliveryArea: "Worldwide" as string | null,
+    // Local delivery only while payment is e-Transfer/cash (Vee, 2026-11-08:
+    // "use your suggestions"). Fees are in cents; edit freely.
+    deliveryArea: "Vaughan and nearby GTA" as string | null,
+    deliveryZones: [
+      { id: "vaughan", label: "Vaughan (Woodbridge, Maple, Concord, Kleinburg, Thornhill)", feeCents: 600 },
+      { id: "gta", label: "Nearby GTA (Richmond Hill, Markham, North York, Etobicoke, Brampton)", feeCents: 1200 },
+    ] as readonly { id: string; label: string; feeCents: number }[],
+    // Free delivery when the order (after discounts) reaches this. null = never free.
+    freeDeliveryOverCents: 7500 as number | null,
     shipping: null as string | null,
     handlingTime: "About 3 business days in the GTA" as string | null,
+  },
+
+  // How customers pay (Vee, 2026-11-08). "manual" = e-Transfer or cash: the
+  // site takes the order, shows payment instructions, and Vee marks it paid
+  // in the Studio. "stripe" = card checkout (built, switched off for now).
+  payments: {
+    mode: "manual" as "manual" | "stripe",
+    // Only shown in order instructions, never elsewhere on the site.
+    eTransferEmail: "vpanetta03@icloud.com" as string | null,
+    // Cash is only offered for pickup, paid when the order is picked up.
+    cash: true,
   },
 
   // Sizes offered in the occasion/holiday and custom order forms (Vee, 2026-10-29;
@@ -70,6 +89,8 @@ export const site = {
   // Owner's on/off switch for taking orders. Even when true, checkout only
   // opens once lib/readiness.ts finds Stripe keys, prices and a fulfilment
   // method. Flip to true when policies are published and you're ready to sell.
+  // Local preview: CHECKOUT_PREVIEW=1 in .env.local opens it on your computer
+  // only, so it can be tried before going live.
   checkoutEnabled: false,
 
   // Welcome offer (Vee, 2026-11-05): new visitors see a pop-up; when they

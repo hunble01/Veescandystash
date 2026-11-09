@@ -28,6 +28,8 @@ export const policies: PolicySection[] = [
       "Custom and occasion orders need a $50 deposit to hold your order in place. Once your deposit is in, your date is booked and we start planning your candy, colours and labels just for you. Your deposit goes toward your order total, and the rest is paid before pickup or delivery.",
       "Changed your mind? Your $50 deposit is fully refunded if you cancel within 48 hours of placing your order. After 48 hours, the deposit can’t be refunded, because we’ve already started buying candy and planning your order.",
       "Before we print anything, we’ll send you a picture of your custom tag or label to approve, so your names, date and wording are just right.",
+      // Vee, 2026-11-06: rush orders welcome, extra fee (amount not set).
+      "Need it sooner? Rush orders are welcome! Extra fees will apply, and we’ll let you know the cost before you confirm your order.",
     ],
   },
   {

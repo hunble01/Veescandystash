@@ -67,10 +67,13 @@ export type AccountOrder = {
   shippingAddress: string;
   customer: { name: string; email: string; phone: string };
   items: OrderItem[];
+  paymentMethod?: string;
+  discount?: number;
+  deliveryFee?: number;
 };
 
 const mine = "(customerUserId == $uid || lower(customer.email) in $emails)";
-const orderFields = `_id, orderNumber, createdAt, status, total, subtotal, tax, fulfilment, shippingAddress, customer,
+const orderFields = `_id, orderNumber, createdAt, status, total, subtotal, tax, fulfilment, shippingAddress, customer, paymentMethod, discount, deliveryFee,
   "items": items[]{ name, quantity, unitPrice, lineTotal, productId, sizeId, candyIds }`;
 
 export async function getOrders(c: Customer): Promise<AccountOrder[]> {

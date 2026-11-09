@@ -57,6 +57,15 @@ async function OrderDetailPageContent({ params }: { params: PageProps<"/account/
         ) : (
           <>
             <Tracker steps={orderSteps(order)} current={order.status} label="Order progress" />
+            {order.status === "awaiting_payment" && order.paymentMethod === "etransfer" && site.payments.eTransferEmail && (
+              <p className="mt-5 rounded-2xl bg-teal-soft px-4 py-3 font-semibold">
+                To pay: send an Interac e-Transfer of {money(order.total)} to <span className="break-all">{site.payments.eTransferEmail}</span> with{" "}
+                <b>{order.orderNumber}</b> in the message.
+              </p>
+            )}
+            {order.status === "awaiting_payment" && order.paymentMethod === "cash" && (
+              <p className="mt-5 rounded-2xl bg-teal-soft px-4 py-3 font-semibold">Please bring {money(order.total)} in cash when you pick up.</p>
+            )}
             <p className="mt-5 text-sm text-ink-soft">Vee updates this as your order is packed and gets ready. Check back here any time.</p>
           </>
         )}
@@ -88,14 +97,20 @@ async function OrderDetailPageContent({ params }: { params: PageProps<"/account/
                 <dd className="font-semibold">{money(order.tax)}</dd>
               </div>
             )}
-            {order.total - order.subtotal - order.tax > 0.005 && (
+            {(order.discount ?? 0) > 0 && (
+              <div className="flex justify-between">
+                <dt className="text-ink-soft">Discount</dt>
+                <dd className="font-semibold">−{money(order.discount)}</dd>
+              </div>
+            )}
+            {(order.deliveryFee ?? order.total - order.subtotal - order.tax) > 0.005 && (
               <div className="flex justify-between">
                 <dt className="text-ink-soft">Delivery</dt>
-                <dd className="font-semibold">{money(order.total - order.subtotal - order.tax)}</dd>
+                <dd className="font-semibold">{money(order.deliveryFee ?? order.total - order.subtotal - order.tax)}</dd>
               </div>
             )}
             <div className="flex justify-between text-lg">
-              <dt className="font-extrabold">Total paid</dt>
+              <dt className="font-extrabold">{order.status === "awaiting_payment" ? "Total to pay" : "Total"}</dt>
               <dd className="font-extrabold">{money(order.total)}</dd>
             </div>
           </dl>
@@ -107,6 +122,7 @@ async function OrderDetailPageContent({ params }: { params: PageProps<"/account/
               single
               rows={[
                 ["Method", fulfilment || "To be confirmed"],
+                ["Payment", order.paymentMethod === "etransfer" ? "Interac e-Transfer" : order.paymentMethod === "cash" ? "Cash at pickup" : ""],
                 ["Pickup area", order.fulfilment === "pickup" ? site.fulfilment.pickupArea : ""],
                 ["Delivery address", order.shippingAddress],
               ]}

@@ -24,6 +24,8 @@ export interface CartLine {
 }
 
 const KEY = "vcs-cart-v1";
+// Discount code typed in the cart, carried to the e-Transfer/cash order page.
+export const CODE_KEY = "vcs-discount-code";
 const EMPTY: CartLine[] = [];
 
 let cache: CartLine[] | null = null;
@@ -96,4 +98,29 @@ export function useCart() {
   const count = lines.reduce((n, l) => n + l.qty, 0);
   const subtotalCents = lines.reduce((n, l) => n + l.unitPriceCents * l.qty, 0);
   return { lines, count, subtotalCents };
+}
+
+// The code saved for the order page ("" on the server and first render).
+const noop = () => () => {};
+export function useSavedCode() {
+  return useSyncExternalStore(
+    noop,
+    () => {
+      try {
+        return sessionStorage.getItem(CODE_KEY) ?? "";
+      } catch {
+        return "";
+      }
+    },
+    () => "",
+  );
+}
+
+export function saveCode(code: string) {
+  try {
+    if (code.trim()) sessionStorage.setItem(CODE_KEY, code.trim());
+    else sessionStorage.removeItem(CODE_KEY);
+  } catch {
+    // Private mode: the code just isn't carried over.
+  }
 }

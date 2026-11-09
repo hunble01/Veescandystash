@@ -1,7 +1,9 @@
 import { Resend } from "resend";
 
-// Emails Vee about new orders, requests and messages. Customer receipts come
-// from Stripe. The one customer email sent from here is the welcome code.
+// Emails Vee about new orders, requests and messages. Customer emails sent from
+// here: the welcome code and e-Transfer/cash order instructions (card receipts
+// would come from Stripe). Customer emails need the sender's domain verified
+// in Resend; until then only Vee's own notifications arrive.
 
 const apiKey = process.env.RESEND_API_KEY;
 const to = process.env.NOTIFY_EMAIL_TO;
@@ -60,3 +62,35 @@ export async function sendWelcomeCode(email: string, firstName: string, code: st
   }
   return true;
 }
+
+// Order confirmation with how to pay (e-Transfer or cash), Vee 2026-11-08.
+export async function sendOrderInstructions(
+  email: string,
+  o: { firstName: string; orderNumber: string; total: string; items: string[]; paymentHtml: string; fulfilment: string },
+) {
+  if (!apiKey) return false;
+  const html = `<div style="font-family:sans-serif;font-size:16px;line-height:1.5;color:#2b1d17;max-width:520px">
+  <p>${o.firstName ? `Hi ${escape(o.firstName)},` : "Hi there,"}</p>
+  <p>Thank you for your order! Here are the details.</p>
+  <p style="font-size:22px;font-weight:bold;background:#fde0cb;border:3px solid #2b1d17;border-radius:16px;padding:10px 18px;display:inline-block">Order ${escape(o.orderNumber)} · ${escape(o.total)}</p>
+  <ul>${o.items.map((i) => `<li>${escape(i)}</li>`).join("")}</ul>
+  ${o.paymentHtml}
+  <p>${escape(o.fulfilment)}</p>
+  <p>Questions? Just reply to this email.</p>
+  <p>Every sweet tooth needs a stash 🍬<br>Vee</p>
+</div>`;
+  const { error } = await new Resend(apiKey).emails.send({
+    from,
+    to: email,
+    subject: `Your Vee’s Candy Stash order ${o.orderNumber}`,
+    html,
+    ...(to ? { replyTo: to } : {}),
+  });
+  if (error) {
+    console.error("Order email failed:", error.message);
+    return false;
+  }
+  return true;
+}
+
+export { escape as escapeHtml };

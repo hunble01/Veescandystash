@@ -16,7 +16,11 @@ export const order = defineType({
       type: "string",
       options: {
         list: [
-          { title: "🆕 New", value: "new" },
+          // e-Transfer / cash orders start here (Vee, 2026-11-08). Tap "Paid"
+          // once the money is in your bank (or cash is collected).
+          { title: "⏳ Awaiting payment", value: "awaiting_payment" },
+          { title: "💰 Paid", value: "paid" },
+          { title: "🆕 New (card, paid)", value: "new" },
           { title: "📦 Packed", value: "packed" },
           { title: "🛍️ Ready for pickup / out for delivery", value: "ready" },
           { title: "✅ Done", value: "done" },
@@ -25,6 +29,7 @@ export const order = defineType({
         layout: "radio",
       },
       initialValue: "new",
+      description: "Tip: use the big button at the bottom to move to the next step. It saves for you.",
     }),
     internalNotes,
     defineField({ name: "orderNumber", type: "string", readOnly: true }),
@@ -40,8 +45,18 @@ export const order = defineType({
       ],
     }),
     defineField({ name: "customerUserId", title: "Customer account", type: "string", readOnly: true, hidden: ({ value }) => !value }),
+    defineField({
+      name: "paymentMethod",
+      title: "Payment",
+      type: "string",
+      readOnly: true,
+      options: { list: [{ title: "Interac e-Transfer", value: "etransfer" }, { title: "Cash at pickup", value: "cash" }, { title: "Card (Stripe)", value: "card" }] },
+      hidden: ({ value }) => !value,
+    }),
     defineField({ name: "fulfilment", title: "Pickup or delivery", type: "string", readOnly: true }),
+    defineField({ name: "deliveryZone", title: "Delivery area", type: "string", readOnly: true, hidden: ({ value }) => !value }),
     defineField({ name: "shippingAddress", title: "Delivery address", type: "text", rows: 3, readOnly: true }),
+    defineField({ name: "customerNotes", title: "Customer’s notes", type: "text", rows: 3, readOnly: true, hidden: ({ value }) => !value }),
     defineField({
       name: "items",
       type: "array",
@@ -68,16 +83,26 @@ export const order = defineType({
       ],
     }),
     defineField({ name: "subtotal", title: "Subtotal ($)", type: "number", readOnly: true }),
+    defineField({ name: "discount", title: "Discount ($)", type: "number", readOnly: true, hidden: ({ value }) => !value }),
+    defineField({ name: "discountCode", title: "Discount code", type: "string", readOnly: true, hidden: ({ value }) => !value }),
+    defineField({ name: "deliveryFee", title: "Delivery fee ($)", type: "number", readOnly: true, hidden: ({ value }) => value == null }),
     defineField({ name: "tax", title: "Tax ($)", type: "number", readOnly: true }),
-    defineField({ name: "total", title: "Total paid ($)", type: "number", readOnly: true }),
-    defineField({ name: "stripeSessionId", title: "Stripe reference", type: "string", readOnly: true }),
+    defineField({ name: "total", title: "Total ($)", type: "number", readOnly: true }),
+    defineField({ name: "stripeSessionId", title: "Stripe reference", type: "string", readOnly: true, hidden: ({ value }) => !value }),
   ],
   orderings: [{ title: "Newest first", name: "newest", by: [{ field: "createdAt", direction: "desc" }] }],
   preview: {
-    select: { name: "customer.name", total: "total", status: "status", createdAt: "createdAt", number: "orderNumber" },
-    prepare: ({ name, total, status, createdAt, number }) => ({
+    select: { name: "customer.name", total: "total", status: "status", createdAt: "createdAt", number: "orderNumber", pay: "paymentMethod", how: "fulfilment" },
+    prepare: ({ name, total, status, createdAt, number, pay, how }) => ({
       title: `${statusEmoji(status)} ${name ?? "Customer"} · $${Number(total ?? 0).toFixed(2)}`,
-      subtitle: `${number ?? ""} · ${createdAt ? new Date(createdAt).toLocaleString("en-CA") : ""}`,
+      subtitle: [
+        number,
+        pay === "cash" ? "cash" : pay === "etransfer" ? "e-Transfer" : "",
+        how === "delivery" ? "delivery" : how === "pickup" ? "pickup" : "",
+        createdAt ? new Date(createdAt).toLocaleDateString("en-CA", { month: "short", day: "numeric" }) : "",
+      ]
+        .filter(Boolean)
+        .join(" · "),
     }),
   },
 });
@@ -100,6 +125,7 @@ export const customEnquiry = defineType({
         layout: "radio",
       },
       initialValue: "new",
+      description: "Tip: use the big button at the bottom to move to the next step. It saves for you.",
     }),
     internalNotes,
     ...[
@@ -203,7 +229,7 @@ export const contactMessage = defineType({
 
 function statusEmoji(status?: string) {
   return (
-    { new: "🆕", packed: "📦", ready: "🛍️", done: "✅", cancelled: "↩️", quoted: "💬", booked: "✅", closed: "✖️" }[status ?? "new"] ??
+    { new: "🆕", awaiting_payment: "⏳", paid: "💰", packed: "📦", ready: "🛍️", done: "✅", cancelled: "↩️", quoted: "💬", booked: "✅", closed: "✖️" }[status ?? "new"] ??
     "🆕"
   );
 }

@@ -6,6 +6,7 @@ import { structureTool } from "sanity/structure";
 import { apiVersion, dataset, projectId } from "./src/sanity/env";
 import { candyOption, faqItem, occasion, product, seasonalCollection, sizeVariant } from "./src/sanity/schemas/catalog";
 import { contactMessage, customEnquiry, customerAddresses, customerFavourites, order } from "./src/sanity/schemas/inbox";
+import { NextStepAction } from "./src/sanity/actions";
 import { structure } from "./src/sanity/structure";
 
 const inboxTypes = new Set(["order", "customEnquiry", "contactMessage"]);
@@ -21,8 +22,10 @@ export default defineConfig({
     templates: (templates) => templates.filter((t) => !inboxTypes.has(t.schemaType)),
   },
   document: {
+    // Inbox items: the "next step" button comes first (the big one), and they
+    // can't be duplicated.
     actions: (actions, { schemaType }) =>
-      inboxTypes.has(schemaType) ? actions.filter((a) => a.action !== "duplicate") : actions,
+      inboxTypes.has(schemaType) ? [NextStepAction, ...actions.filter((a) => a.action !== "duplicate")] : actions,
   },
   plugins: [structureTool({ structure })],
   apiVersion,
