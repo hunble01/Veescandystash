@@ -18,7 +18,7 @@ export interface CartLine {
   sizeId: string;
   sizeLabel: string;
   unitPriceCents: number;
-  candies?: { id: string; name: string }[]; // Build Your Stash picks
+  candies?: { id: string; name: string; extraCents?: number }[]; // Build Your Stash picks (extraCents: the +$1 candies)
   qty: number;
   accent: Accent;
 }

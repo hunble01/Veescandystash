@@ -55,7 +55,7 @@ export function WelcomePopup({ code, percent, endsAt }: { code: string; percent:
   function shop() {
     saveCode(code);
     close();
-    router.push("/");
+    router.push("/build-your-stash"); // Vee, 2026-11-10
   }
 
   useEffect(() => {

@@ -11,7 +11,7 @@ import type { ShipQuote } from "@/lib/canadaPost";
 import { Button, ButtonLink } from "@/components/ui";
 import { PromoCode } from "@/components/PromoCode";
 import { cart, saveCode, useCart, useSavedCode } from "@/lib/cart";
-import { describePicks, formatPrice } from "@/lib/format";
+import { describeExtras, describePicks, formatPrice } from "@/lib/format";
 
 type Quotes = { state: "idle" | "loading" | "ok" | "error"; quotes: ShipQuote[]; message: string };
 const days = (d: number | null) => (d ? ` · about ${d} business day${d === 1 ? "" : "s"} in transit` : "");
@@ -303,6 +303,7 @@ export function CheckoutForm({
               <span className="min-w-0">
                 <span className="block font-bold">{l.qty} × {l.productName}</span>
                 <span className="block text-sm text-ink-soft">{l.sizeLabel}{l.candies ? `: ${describePicks(l.candies.map((c) => c.name))}` : ""}</span>
+                {l.candies && describeExtras(l.candies) && <span className="block text-sm font-bold text-pink-deep">Extra candy: {describeExtras(l.candies)}</span>}
               </span>
               <span className="font-bold whitespace-nowrap">{formatPrice(l.unitPriceCents * l.qty)}</span>
             </li>

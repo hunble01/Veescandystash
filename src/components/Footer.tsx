@@ -154,7 +154,7 @@ export function Footer() {
                     <span className="font-bold">{site.fulfilment.pickupArea}</span>
                   </li>
                 )}
-                {site.fulfilment.footerDelivery && (
+                {site.fulfilment.footerDelivery && site.fulfilment.methods.includes("delivery") && (
                   <li>
                     <span className="block text-xs font-extrabold tracking-[0.15em] uppercase opacity-90">Delivery</span>
                     <span className="font-bold">{site.fulfilment.footerDelivery}</span>

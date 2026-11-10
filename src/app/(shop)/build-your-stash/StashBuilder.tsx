@@ -136,7 +136,10 @@ export function StashBuilder({ product, candies, orderingOpen }: { product: Prod
       sizeId: size.id,
       sizeLabel: size.label,
       unitPriceCents,
-      candies: picked.map((id) => ({ id, name: candies.find((c) => c.id === id)?.name ?? "Candy" })),
+      candies: picked.map((id) => {
+        const c = candies.find((x) => x.id === id);
+        return { id, name: c?.name ?? "Candy", ...(c?.extraChargeCents ? { extraCents: c.extraChargeCents } : {}) };
+      }),
       accent: product.accent,
     });
     setAdded((n) => n + 1);

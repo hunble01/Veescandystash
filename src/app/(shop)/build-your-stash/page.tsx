@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { StashBuilder } from "./StashBuilder";
 import { BuildHeader } from "./BuildHeader";
+import { PromoNudge } from "@/components/PromoNudge";
 import { ButtonLink, Container } from "@/components/ui";
 import { getCandies, getProducts } from "@/lib/catalog";
 import { checkoutOpen } from "@/lib/readiness";
@@ -22,6 +23,8 @@ export default async function BuildYourStashPage() {
 
       <Container className="py-12">
         {builder && <TrackView slug={builder.slug} />}
+        {/* Advent calendar reminder (site.promo; Vee, 2026-11-10) */}
+        <PromoNudge products={products} className="mx-auto mb-10 max-w-3xl" />
         {builder ? (
           // The builder reads the chosen bag from the address (?bag=…).
           <Suspense>

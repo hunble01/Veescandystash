@@ -3,10 +3,20 @@
 import { UserButton, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { nav, site } from "@/config/site";
 import { useCart } from "@/lib/cart";
 import { Logo } from "./Logo";
+
+// After the grand-opening week the top bar switches to site.announcementAfterLaunch
+// by itself (checked in the browser, so the prerendered page stays the same).
+const noSubscribe = () => () => {};
+const launchOver = () => Boolean(site.launchOffer && Date.now() >= Date.parse(site.launchOffer.endsAt));
+function useAnnouncement() {
+  const over = useSyncExternalStore(noSubscribe, launchOver, () => false);
+  const after = site.announcementAfterLaunch;
+  return over && after ? { text: after.text, href: after.href } : { text: site.announcement, href: site.announcementHref };
+}
 
 const mobileNav = [...nav, { href: "/faq", label: "FAQ" }, { href: "/contact", label: "Contact" }];
 
@@ -25,6 +35,7 @@ function HeaderView({ pathname }: { pathname: string }) {
   const [open, setOpen] = useState(false);
   const { count } = useCart();
   const { isSignedIn } = useAuth();
+  const bar = useAnnouncement();
   const accountLink = isSignedIn ? { href: "/account", label: "My account" } : { href: "/sign-in", label: "Log in" };
 
   useEffect(() => {
@@ -38,20 +49,26 @@ function HeaderView({ pathname }: { pathname: string }) {
 
   return (
     <header className="sticky top-0 z-40">
-      {site.announcement && (
+      {bar.text && (
         // Teal bar; the words sit on an orange label, a bit bigger for the
         // grand opening (Vee, 2026-11-09; was red, text-sm).
-        <p className="border-b-[3px] border-ink bg-teal px-3 py-2 text-center text-base font-extrabold sm:text-lg">
-          <span className="inline-block rounded-full border-[3px] border-ink bg-orange px-4 py-1 text-white shadow-[2px_2px_0_var(--color-ink)] [text-shadow:1px_1px_0_var(--color-ink)]">
-            {site.announcementHref ? (
-              <Link href={site.announcementHref} className="underline-offset-4 hover:underline">
-                {site.announcement} <span aria-hidden>→</span>
-              </Link>
-            ) : (
-              site.announcement
-            )}
-          </span>
-        </p>
+        // The whole bar is tappable when it has a link (Vee, 2026-11-10).
+        bar.href ? (
+          <Link
+            href={bar.href}
+            className="group block border-b-[3px] border-ink bg-teal px-3 py-2 text-center text-base font-extrabold sm:text-lg"
+          >
+            <span className="inline-block rounded-full border-[3px] border-ink bg-orange px-4 py-1 text-white underline-offset-4 shadow-[2px_2px_0_var(--color-ink)] [text-shadow:1px_1px_0_var(--color-ink)] group-hover:underline">
+              {bar.text} <span aria-hidden>→</span>
+            </span>
+          </Link>
+        ) : (
+          <p className="border-b-[3px] border-ink bg-teal px-3 py-2 text-center text-base font-extrabold sm:text-lg">
+            <span className="inline-block rounded-full border-[3px] border-ink bg-orange px-4 py-1 text-white shadow-[2px_2px_0_var(--color-ink)] [text-shadow:1px_1px_0_var(--color-ink)]">
+              {bar.text}
+            </span>
+          </p>
+        )
       )}
       <div className="px-3 pt-3 sm:px-5">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 rounded-full border-[3px] border-ink bg-cream/95 pr-2 pl-3 shadow-[var(--shadow-pop)] backdrop-blur sm:pl-4">

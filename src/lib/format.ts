@@ -54,3 +54,16 @@ export const describePicks = (names: string[]) => {
   for (const n of names) counts.set(n, (counts.get(n) ?? 0) + 1);
   return [...counts].map(([n, c]) => (c > 1 ? `${n} ×${c}` : n)).join(", ");
 };
+
+// The extra-charge picks in a builder bag (Vee, 2026-11-10: show the +$1
+// candies in the cart), e.g. "Bubs Sour Skull ×2 +$2.00, Strawberry Bon Bons +$1.00".
+export const describeExtras = (picks: { name: string; extraCents?: number }[]) => {
+  const extras = new Map<string, { count: number; cents: number }>();
+  for (const p of picks) {
+    if (!p.extraCents) continue;
+    const e = extras.get(p.name) ?? { count: 0, cents: 0 };
+    extras.set(p.name, { count: e.count + 1, cents: e.cents + p.extraCents });
+  }
+  if (extras.size === 0) return null;
+  return [...extras].map(([n, e]) => `${n}${e.count > 1 ? ` ×${e.count}` : ""} +${formatPrice(e.cents)}`).join(", ");
+};

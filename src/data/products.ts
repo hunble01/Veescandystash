@@ -22,7 +22,7 @@ const brainstormedSizes = (productId: string): SizeVariant[] =>
 // (null) means customers choose as many candies as they like.
 const builderSizes: SizeVariant[] = [
   { label: "0.5 lb", grams: 227, picks: 5, price: 1599 },
-  { label: "1 lb", grams: 454, picks: 10, price: 2699 },
+  { label: "1 lb", grams: 454, picks: 8, price: 2699 },
   { label: "2 lb", grams: 907, picks: 15, price: 5199 },
   { label: "4 lb", grams: 1814, picks: 20, price: 8500 },
 ].map(({ label, grams, picks, price }) => ({

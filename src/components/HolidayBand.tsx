@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { SeasonalCard } from "./cards";
 import { Container } from "./ui";
+import { site } from "@/config/site";
 import type { SeasonalCollection } from "@/lib/types";
 
 const red = "var(--color-holiday-red)";
@@ -38,6 +39,9 @@ const flakes: { cls: string; c: string; delay: string }[] = [
 // ticker ribbons (Vee's requests, 2026-10-27). Shared by the Occasions and Holidays pages.
 export function HolidayBand({ collections, title, intro }: { collections: SeasonalCollection[]; title: string; intro?: string }) {
   if (collections.length === 0) return null;
+  // The upcoming holiday (site.featuredHoliday) goes first, as a wide card.
+  const featured = collections.find((c) => c.slug === site.featuredHoliday);
+  const rest = collections.filter((c) => c !== featured);
   return (
     <section id="seasonal" aria-labelledby="seasonal-title" className="relative scroll-mt-28">
       <div className="relative isolate overflow-hidden bg-white py-20 sm:py-24">
@@ -54,11 +58,16 @@ export function HolidayBand({ collections, title, intro }: { collections: Season
             <h2 id="seasonal-title" className="text-[clamp(2.6rem,8vw,4.5rem)] leading-none">{title}</h2>
             {intro && <p className="mt-5 text-lg font-medium text-ink-soft sm:text-xl">{intro}</p>}
           </div>
+          {featured && (
+            <div className="mb-8">
+              <SeasonalCard collection={featured} index={1} featured />
+            </div>
+          )}
           {/* Flex rather than grid so a short last row sits centred. */}
           <div className="flex flex-wrap justify-center gap-6">
-            {collections.map((c, i) => (
+            {rest.map((c, i) => (
               <div key={c.id} className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]">
-                <SeasonalCard collection={c} index={i} />
+                <SeasonalCard collection={c} index={i + (featured ? 2 : 0)} />
               </div>
             ))}
           </div>

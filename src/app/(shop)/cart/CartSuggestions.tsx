@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { bagPhoto } from "@/data/bagPhotos";
 import { cart, useCart } from "@/lib/cart";
+import { site } from "@/config/site";
 import { accentClasses, formatPrice } from "@/lib/format";
 import { useRecentlyViewed } from "@/lib/recentlyViewed";
 import type { Product } from "@/lib/types";
@@ -19,7 +20,9 @@ export function CartSuggestions({ products }: { products: Product[] }) {
   const available = products.filter((p) => p.stockStatus !== "sold_out" && p.sizes.some((s) => s.active && s.priceCents != null));
   // Builder bags can be built again with different candy, so they always qualify.
   const notInCart = available.filter((p) => p.type === "builder" || !inCart.has(p.id));
+  // The seasonal promo (advent calendar) always comes first (Vee, 2026-11-10).
   const rank = (p: Product) => {
+    if (p.slug === site.promo?.productSlug) return -1;
     const i = viewed.indexOf(p.slug);
     return i === -1 ? 100 : i;
   };
@@ -61,7 +64,11 @@ function Suggestion({ product: p, recentlyViewed }: { product: Product; recently
         ) : null}
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
-        {recentlyViewed && <p className="text-xs font-extrabold tracking-wide text-teal-deep uppercase">You looked at this</p>}
+        {p.slug === site.promo?.productSlug ? (
+          <p className="text-xs font-extrabold tracking-wide text-holiday-red uppercase">🎄 {site.promo.eyebrow}</p>
+        ) : (
+          recentlyViewed && <p className="text-xs font-extrabold tracking-wide text-teal-deep uppercase">You looked at this</p>
+        )}
         <Link href={href} className="text-lg leading-tight font-extrabold hover:underline">{p.name}</Link>
         <p className="font-bold text-ink-soft">{sizes.length > 1 ? `From ${formatPrice(from)}` : formatPrice(from)}</p>
         <div className="mt-auto pt-3">

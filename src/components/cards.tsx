@@ -126,7 +126,8 @@ const holidayCandies = [
 ];
 
 // Bold, solid-colour holiday card built to stand out on the seasonal band.
-export function SeasonalCard({ collection, index = 0 }: { collection: SeasonalCollection; index?: number }) {
+// `featured`: the upcoming holiday, shown first as a big wide card (Vee, 2026-11-10).
+export function SeasonalCard({ collection, index = 0, featured = false }: { collection: SeasonalCollection; index?: number; featured?: boolean }) {
   const a = accentClasses[collection.accent];
   const text = darkAccents.includes(collection.accent) ? "text-white" : "text-ink";
   return (
@@ -136,26 +137,30 @@ export function SeasonalCard({ collection, index = 0 }: { collection: SeasonalCo
       // The scroll-reveal script may mark it shown before React hydrates it.
       suppressHydrationWarning
       style={{ "--delay": `${index * 90}ms` } as CSSProperties}
-      className={`group relative flex h-full min-h-80 flex-col overflow-hidden rounded-[var(--radius-card)] border-[3px] border-ink p-6 ${text} shadow-[var(--shadow-pop-lg)] transition-all duration-300 hover:z-10 hover:rotate-0 hover:scale-[1.03] ${a.solid} ${tilts[index % tilts.length]}`}
+      className={`group relative flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border-[3px] border-ink ${text} shadow-[var(--shadow-pop-lg)] transition-all duration-300 hover:z-10 hover:rotate-0 ${a.solid} ${
+        featured ? "min-h-72 p-7 hover:scale-[1.01] sm:p-10 lg:min-h-80 lg:pr-48" : `min-h-80 p-6 hover:scale-[1.03] ${tilts[index % tilts.length]}`
+      }`}
     >
       <span aria-hidden className="absolute -right-16 -bottom-16 h-48 w-48 rounded-full bg-white/25 transition-transform duration-500 group-hover:scale-125" />
-      <div aria-hidden className="absolute right-4 bottom-4 w-16 rotate-12 transition-transform duration-500 group-hover:-translate-y-2 group-hover:rotate-[24deg]">
+      {featured && <span aria-hidden className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-white/15 transition-transform duration-500 group-hover:scale-110" />}
+      <div aria-hidden className={`absolute rotate-12 transition-transform duration-500 group-hover:-translate-y-2 group-hover:rotate-[24deg] ${featured ? "right-6 bottom-6 w-24 sm:w-32 lg:right-12 lg:bottom-1/2 lg:w-40 lg:translate-y-1/2" : "right-4 bottom-4 w-16"}`}>
         {holidayCandies[index % holidayCandies.length]}
       </div>
 
       <span className="mb-4 self-start -rotate-3 rounded-full border-[3px] border-ink bg-cream px-3 text-ink py-1 text-xs font-extrabold tracking-wide uppercase shadow-[3px_3px_0_var(--color-ink)]">
         {collectionStatusLabel[collection.status]}
       </span>
-      <h3 className="relative font-display text-4xl leading-none font-normal">{collection.name}</h3>
-      <p className="relative mt-3 font-semibold">{collection.description}</p>
+      {featured && <span className="relative mb-2 text-sm font-extrabold tracking-[0.18em] uppercase opacity-90">🎄 Coming up next</span>}
+      <h3 className={`relative font-display leading-none font-normal ${featured ? "text-[clamp(3rem,10vw,5.5rem)]" : "text-4xl"}`}>{collection.name}</h3>
+      <p className={`relative mt-3 font-semibold ${featured ? "max-w-2xl text-lg sm:text-xl" : ""}`}>{collection.description}</p>
       {collection.ideas.length > 0 && (
-        <ul className="relative mt-4 mr-16 flex flex-wrap gap-2">
+        <ul className={`relative mt-4 flex flex-wrap gap-2 ${featured ? "mr-24 max-w-2xl sm:mr-32 lg:mr-0" : "mr-16"}`}>
           {collection.ideas.map((idea) => (
-            <li key={idea} className="rounded-full bg-white/85 px-3 py-1 text-xs font-bold text-ink">{idea}</li>
+            <li key={idea} className={`rounded-full bg-white/85 px-3 py-1 font-bold text-ink ${featured ? "text-sm" : "text-xs"}`}>{idea}</li>
           ))}
         </ul>
       )}
-      <p className="relative mt-auto pt-4 font-extrabold">
+      <p className={`relative mt-auto pt-4 font-extrabold ${featured ? "text-lg" : ""}`}>
         {collection.orderCutoff ? `Order by ${collection.orderCutoff} · ` : ""}See themes <span aria-hidden>→</span>
       </p>
     </Link>

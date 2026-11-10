@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ButtonLink, Container, DraftNote, PageHeader } from "@/components/ui";
+import { ButtonLink, Container, PageHeader } from "@/components/ui";
 import { site } from "@/config/site";
 import { getFaq } from "@/lib/catalog";
 import type { FaqLink } from "@/lib/types";
@@ -32,9 +32,6 @@ export default async function FaqPage() {
     <>
       <PageHeader eyebrow="FAQ" title="Good questions." intro="Everything you need to know before you order." />
       <Container className="max-w-3xl py-12">
-        <div className="mb-10">
-          <DraftNote>Answers and policies will be added once Vee confirms them. Nothing here is a final policy yet.</DraftNote>
-        </div>
         {topics.map((topic) => (
           <section key={topic} className="mb-10">
             <h2 className="mb-4 text-2xl font-semibold">{topic}</h2>

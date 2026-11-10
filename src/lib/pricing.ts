@@ -1,7 +1,7 @@
 import { site } from "@/config/site";
 import { getOrders, type Customer } from "@/lib/account";
 import { getCandies, getProducts } from "@/lib/catalog";
-import { describePicks } from "@/lib/format";
+import { describeExtras, describePicks } from "@/lib/format";
 import { MAX_PICKS, MAX_QTY } from "@/lib/limits";
 
 // Server-only. Turns what the browser sent (ids and quantities only) into
@@ -56,6 +56,8 @@ export async function priceLines(lines: unknown): Promise<PricedLine[]> {
       const limit = size.pickAllowance ?? MAX_PICKS;
       if (picked.length > limit) throw new OrderProblem(`The ${size.label} bag holds up to ${limit} candies.`);
       name += `: ${describePicks(picked.map((c) => c!.name))}`;
+      const extras = describeExtras(picked.map((c) => ({ name: c!.name, extraCents: c!.extraChargeCents ?? undefined })));
+      if (extras) name += ` (extra candy: ${extras})`;
       unitCents += picked.reduce((n, c) => n + (c!.extraChargeCents ?? 0), 0);
       candyIds = picked.map((c) => c!.id);
     }

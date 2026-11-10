@@ -19,6 +19,17 @@ export const site = {
   //   "🎄 NEW: the Christmas Advent Calendar, 24 days of candy surprises!" → "/shop/christmas-advent-calendar"
   announcement: "🎉 Grand opening! 10% off everything for 1 week with code WELCOME10" as string | null,
   announcementHref: "/build-your-stash" as string | null,
+  // Shown instead of the bar above once launchOffer.endsAt has passed
+  // (Vee, 2026-11-10: promote the advent calendar more). null = keep the bar.
+  announcementAfterLaunch: {
+    text: "🎄 NEW: the Christmas Advent Calendar, 24 days of candy surprises!",
+    href: "/shop/christmas-advent-calendar",
+  } as { text: string; href: string } | null,
+
+  // Holiday shown first and bigger (a wide card) in the holiday section
+  // (Vee, 2026-11-10: Christmas is coming up). Change the slug for the next
+  // holiday, or null to show them all the same size.
+  featuredHoliday: "christmas" as string | null,
 
   // Big promo on the home page, under the ribbons. Points at a product in
   // Sanity by its slug; set to null to hide it (e.g. after Christmas).
@@ -50,7 +61,8 @@ export const site = {
     // stays off until at least one is set.
     // Free pickup, or shipping anywhere with Canada Post (Vee, 2026-11-09:
     // replaces her own Vaughan/GTA delivery). "delivery" = Canada Post.
-    methods: ["pickup", "delivery"] as ("pickup" | "delivery")[],
+    // Vee, 2026-11-10: pickup only for now, Canada Post shipping on hold. Add "delivery" back to switch shipping on.
+    methods: ["pickup"] as ("pickup" | "delivery")[],
     pickupArea: "Vaughan, Ontario" as string | null,
     // Canada Post prices are looked up live for the customer's address
     // (src/lib/canadaPost.ts) from Vee's postal code in Maple. Keys and the
@@ -108,7 +120,7 @@ export const site = {
   // method. Flip to true when policies are published and you're ready to sell.
   // Local preview: CHECKOUT_PREVIEW=1 in .env.local opens it on your computer
   // only, so it can be tried before going live.
-  checkoutEnabled: false,
+  checkoutEnabled: true, // Vee, 2026-11-10: ordering on (pickup until Canada Post works)
 
   // Welcome offer (Vee, 2026-11-05): new visitors see a pop-up; when they
   // create an account we email them this code, and it takes the % off their

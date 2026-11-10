@@ -191,7 +191,7 @@ export const seasonalCollections: SeasonalCollection[] = [
     slug: "christmas",
     name: "Christmas",
     description: "Giving is better than receiving, especially candy! Stocking treats, teacher gifts and holiday party favours.",
-    ideas: ["Stocking treats", "Teacher gifts", "Holiday party favours"],
+    ideas: ["Advent calendars", "Stocking treats", "Teacher gifts", "Holiday party favours"],
     themes: [
       { name: "Stocking stuffer holiday bags", description: "Red and green candy with a holiday message on the tag. Sealed with a custom coloured ribbon." },
       { name: "Secret Santa", description: "All-red candy with a “From your Secret Santa” tag. Sealed with a custom coloured ribbon." },

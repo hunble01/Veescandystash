@@ -53,3 +53,4 @@ deno.lock
 # owner photo originals (cropped copies live in public/)
 /candy bags/
 /neww/
+/me/

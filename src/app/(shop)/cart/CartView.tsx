@@ -10,7 +10,8 @@ import { PromoCode } from "@/components/PromoCode";
 import { Button, ButtonLink } from "@/components/ui";
 import { bagPhoto } from "@/data/bagPhotos";
 import { MAX_QTY, cart, saveCode, useCart, useSavedCode } from "@/lib/cart";
-import { accentClasses, describePicks, formatPrice } from "@/lib/format";
+import { site } from "@/config/site";
+import { accentClasses, describeExtras, describePicks, formatPrice } from "@/lib/format";
 
 export function CartView({
   checkoutOpen,
@@ -84,6 +85,9 @@ export function CartView({
                     </Link>
                     <p className="font-medium text-ink-soft">{l.sizeLabel}</p>
                     {l.candies && <p className="mt-1 text-sm font-medium text-ink-soft">{describePicks(l.candies.map((c) => c.name))}</p>}
+                    {l.candies && describeExtras(l.candies) && (
+                      <p className="mt-1 text-sm font-bold text-pink-deep">Extra candy: {describeExtras(l.candies)}</p>
+                    )}
                   </div>
                   <p className="font-extrabold">{formatPrice(l.unitPriceCents * l.qty)}</p>
                 </div>
@@ -128,7 +132,7 @@ export function CartView({
           )}
         </dl>
         <p className="mt-3 text-sm font-medium text-ink-soft">
-          {paymentMode === "manual" ? "Choose pickup or delivery on the next step. Pay by e-Transfer, or cash at pickup." : "Tax and pickup or delivery are confirmed at checkout."}
+          {paymentMode === "manual" ? `${site.fulfilment.methods.includes("delivery") ? "Choose pickup or shipping on the next step." : `Free pickup in ${site.fulfilment.pickupArea ?? "Vaughan"}.`} Pay by e-Transfer, or cash at pickup.` : "Tax and pickup or delivery are confirmed at checkout."}
         </p>
         {/* Promo code (Vee, 2026-11-09). Checked on the server again at checkout. */}
         <PromoCode initialCode={saved} onChange={(c, percent) => setPromo({ code: c, percent })} />
