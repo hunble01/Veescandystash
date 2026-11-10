@@ -87,13 +87,20 @@ export function OccasionTile({ occasion, index = 0 }: { occasion: Occasion; inde
       // The scroll-reveal script may mark it shown before React hydrates it.
       suppressHydrationWarning
       style={{ "--delay": `${index * 70}ms` } as CSSProperties}
-      className={`group relative flex min-h-44 flex-col justify-between overflow-hidden rounded-[var(--radius-card)] border-[3px] border-ink p-5 shadow-[var(--shadow-pop)] transition-all duration-300 hover:z-10 hover:rotate-0 hover:scale-[1.04] hover:shadow-[var(--shadow-pop-lg)] sm:min-h-56 ${a.soft} ${tilts[index % tilts.length]}`}
+      className={`@container group relative flex min-h-44 flex-col justify-between overflow-hidden rounded-[var(--radius-card)] border-[3px] border-ink p-5 shadow-[var(--shadow-pop)] transition-all duration-300 hover:z-10 hover:rotate-0 hover:scale-[1.04] hover:shadow-[var(--shadow-pop-lg)] sm:min-h-56 ${a.soft} ${tilts[index % tilts.length]}`}
     >
       <span
         aria-hidden
         className={`absolute -top-10 -right-10 h-28 w-28 rounded-full opacity-60 transition-transform duration-500 group-hover:scale-150 ${a.solid}`}
       />
-      <h3 className="relative font-display text-[1.7rem] leading-none font-normal sm:text-3xl">{occasion.shortName}</h3>
+      {/* Titles shrink to fit the tile on narrow phones, by their longest
+          word, so "Graduation" or "Baptism" never get cut off (Vee, 2026-11-09). */}
+      <h3
+        className="relative font-display leading-none font-normal [--t:1.7rem] sm:[--t:1.875rem]"
+        style={{ fontSize: `min(var(--t), calc(100cqw / ${(Math.max(...occasion.shortName.split(/\s+/).map((w) => w.length)) * 0.68).toFixed(2)}))` }}
+      >
+        {occasion.shortName}
+      </h3>
       <div className="relative">
         <p className="text-sm font-semibold text-ink-soft">{occasion.tagline}</p>
         <span className="mt-3 inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white text-lg transition-transform group-hover:translate-x-1 group-hover:-rotate-12">

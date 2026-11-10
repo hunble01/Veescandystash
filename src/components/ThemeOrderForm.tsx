@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
@@ -7,6 +8,7 @@ import { submitThemeOrder } from "@/app/(shop)/actions";
 import { Field, Input, Select, Textarea, describedBy } from "@/components/form";
 import { Button, DraftNote } from "@/components/ui";
 import { site } from "@/config/site";
+import { themePhoto } from "@/data/themePhotos";
 import type { Accent, Theme } from "@/lib/types";
 import { earliestThemeDate, readForm, themeOrderFields, validateThemeOrder, type Errors } from "@/lib/validation";
 
@@ -25,6 +27,8 @@ const checkedBg: Record<Accent, string> = {
   green: "has-checked:bg-holiday-green-soft",
   gold: "has-checked:bg-holiday-gold-soft",
 };
+const THEME_PREFIX = "Theme/occasion:";
+
 type Step = "edit" | "sent" | "not_configured" | "error";
 
 export function ThemeOrderForm({ occasion, themes, accent }: { occasion: string; themes: Theme[]; accent: Accent }) {
@@ -33,6 +37,18 @@ export function ThemeOrderForm({ occasion, themes, accent }: { occasion: string;
   const [step, setStep] = useState<Step>("edit");
   const [sending, startSending] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Picking a theme writes it at the top of Special requests (Vee, 2026-11-09),
+  // e.g. "Theme/occasion: Baby Shower, Soft pastels". Picking another theme
+  // swaps that line; anything the customer typed below it is kept.
+  function onThemePicked(theme: string) {
+    const box = formRef.current?.querySelector<HTMLTextAreaElement>('textarea[name="requests"]');
+    if (!box) return;
+    const line = `${THEME_PREFIX} ${occasion}, ${theme}`;
+    const rest = box.value.split(/\r?\n/);
+    if (rest[0]?.startsWith(THEME_PREFIX)) rest.shift();
+    box.value = `${[line, ...rest].join("\n").trimEnd()}\n`;
+  }
 
   function showErrors(errs: Errors) {
     setErrors(errs);
@@ -81,20 +97,29 @@ export function ThemeOrderForm({ occasion, themes, accent }: { occasion: string;
       <fieldset aria-describedby={err("theme") ? "theme-error" : undefined}>
         <legend className="mb-2 font-display text-3xl">Themes we offer</legend>
         <p className="mb-5 text-ink-soft">Pick one to start. Want something specific? Choose “{OTHER}” and tell us below.</p>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[...themes, { name: OTHER, description: "Your own idea: colours, characters or a theme we haven’t listed. Sealed with a custom coloured ribbon." }].map((t) => (
+        {/* All themes side by side in their usual order, every box in a row the
+            same height, photos lined up at the bottom (Vee, 2026-11-09). */}
+        {(() => {
+          const all = [...themes, { name: OTHER, description: "Your own idea: colours, characters or a theme we haven’t listed. Sealed with a custom coloured ribbon." }];
+          const card = (t: Theme) => (
             <label
               key={t.name}
               className={`flex cursor-pointer flex-col gap-2 rounded-2xl border-[3px] border-ink bg-white p-5 shadow-[var(--shadow-pop)] transition has-checked:-translate-y-0.5 has-checked:shadow-[var(--shadow-pop-lg)] has-focus-visible:outline-3 has-focus-visible:outline-teal ${checkedBg[accent]}`}
             >
               <span className="flex items-center gap-3">
-                <input type="radio" name="theme" value={t.name} className="h-5 w-5 accent-teal-deep" />
+                <input type="radio" name="theme" value={t.name} onChange={() => onThemePicked(t.name)} className="h-5 w-5 accent-teal-deep" />
                 <span className="text-lg font-extrabold">{t.name}</span>
               </span>
               {t.description && <span className="text-ink-soft">{t.description}</span>}
+              {themePhoto(t.name) ? (
+                <span className="relative mx-auto mt-auto block aspect-[3/4] h-44 overflow-hidden rounded-xl">
+                  <Image src={themePhoto(t.name)!} alt={`${t.name} candy bag`} fill sizes="132px" className="object-cover" />
+                </span>
+              ) : null}
             </label>
-          ))}
-        </div>
+          );
+          return <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{all.map(card)}</div>;
+        })()}
         {err("theme") && <p id="theme-error" className="mt-3 font-semibold text-pink-deep">{err("theme")}</p>}
       </fieldset>
 
@@ -113,12 +138,14 @@ export function ThemeOrderForm({ occasion, themes, accent }: { occasion: string;
               {site.bagSizes.map((s) => <option key={s}>{s}</option>)}
             </Select>
           </Field>
-          <Field id="eventDate" label="Needed by" required error={err("eventDate")} hint={notice ? `At least ${notice} days from today.` : undefined}>
+          {/* The notice sits under the box so all three boxes line up (Vee, 2026-11-09). */}
+          <Field id="eventDate" label="Needed by" required error={err("eventDate")}>
             <Input type="date" min={earliestThemeDate()} {...a11y("eventDate", Boolean(notice))} />
+            {notice ? <p id="eventDate-hint" className="mt-1.5 text-sm text-ink-soft">At least {notice} days from today.</p> : null}
           </Field>
         </div>
         <Field id="label" label="Message for the tag" hint="Names, a date, a holiday message or a thank-you.">
-          <Input {...a11y("label", true)} placeholder="e.g. Happy 7th Birthday, Leo!" />
+          <Input {...a11y("label", true)} placeholder="e.g. Happy Birthday!" />
         </Field>
         <Field id="requests" label="Special requests" hint="Specific colours, characters, candy you’d love or anything else.">
           <Textarea {...a11y("requests", true)} />

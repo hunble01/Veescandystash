@@ -22,9 +22,9 @@ export function ShopShell({ children }: { children: ReactNode }) {
       <Suspense fallback={null}>
         <RevealObserver />
       </Suspense>
-      {site.welcomeDiscountPercent ? (
+      {site.launchOffer ? (
         <Suspense fallback={null}>
-          <WelcomePopup percent={site.welcomeDiscountPercent} />
+          <WelcomePopup code={site.launchOffer.code} percent={site.launchOffer.percent} endsAt={site.launchOffer.endsAt} />
         </Suspense>
       ) : null}
     </div>

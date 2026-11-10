@@ -17,6 +17,7 @@ export type PricedLine = {
   qty: number;
   productId: string;
   sizeId: string;
+  sizeLabel: string;
   candyIds?: string[];
 };
 
@@ -58,16 +59,29 @@ export async function priceLines(lines: unknown): Promise<PricedLine[]> {
       unitCents += picked.reduce((n, c) => n + (c!.extraChargeCents ?? 0), 0);
       candyIds = picked.map((c) => c!.id);
     }
-    priced.push({ name, unitCents, qty, productId: product.id, sizeId: size.id, ...(candyIds ? { candyIds } : {}) });
+    priced.push({ name, unitCents, qty, productId: product.id, sizeId: size.id, sizeLabel: size.label, ...(candyIds ? { candyIds } : {}) });
   }
   return priced;
 }
 
-// Welcome code (Vee, 2026-11-05): emailed to new accounts; takes
-// site.welcomeDiscountPercent off the FIRST order. Returns the percent, or 0
-// when no code was typed. Throws a friendly message when it can't be used.
+// Is the grand-opening code still running? (site.launchOffer)
+export function launchOfferActive(now = Date.now()) {
+  const o = site.launchOffer;
+  return !!o && now < Date.parse(o.endsAt);
+}
+
+// Discount codes. Grand-opening code (Vee, 2026-11-09): anyone, any order,
+// until site.launchOffer.endsAt. Welcome code (Vee, 2026-11-05): emailed to
+// new accounts; takes site.welcomeDiscountPercent off the FIRST order.
+// Returns the percent, or 0 when no code was typed. Throws a friendly
+// message when it can't be used.
 export async function welcomePercentFor(code: string, customer: Customer | null): Promise<number> {
   if (!code) return 0;
+  const launch = site.launchOffer;
+  if (launch && code.toUpperCase() === launch.code.toUpperCase()) {
+    if (!launchOfferActive()) throw new OrderProblem("Sorry, our grand-opening code has ended.");
+    return launch.percent;
+  }
   const percent = site.welcomeDiscountPercent;
   if (!percent || code.toUpperCase() !== site.welcomeCode.toUpperCase()) throw new OrderProblem("That code isn’t valid. Please check it and try again.");
   if (!customer) throw new OrderProblem("Please log in to your account to use this code.", 401);
@@ -76,9 +90,13 @@ export async function welcomePercentFor(code: string, customer: Customer | null)
 }
 
 // Delivery fee for a zone, after the free-delivery threshold. null = unknown zone.
-export function deliveryFeeCents(zoneId: string, subtotalAfterDiscountCents: number): number | null {
-  const zone = site.fulfilment.deliveryZones.find((z) => z.id === zoneId);
-  if (!zone) return null;
-  const freeOver = site.fulfilment.freeDeliveryOverCents;
-  return freeOver != null && subtotalAfterDiscountCents >= freeOver ? 0 : zone.feeCents;
+// Parcel weight for Canada Post (grams): candy weight from the bag size
+// ("0.5 lb", "2 lb"…) or the default item weight, plus the box.
+export function parcelGrams(lines: Pick<PricedLine, "sizeLabel" | "qty">[]): number {
+  const ship = site.fulfilment.shipping;
+  const item = (label: string) => {
+    const lb = /(\d+(?:\.\d+)?)\s*lb/i.exec(label);
+    return lb ? Math.round(Number(lb[1]) * 453.6) : ship.defaultItemGrams;
+  };
+  return ship.packagingGrams + lines.reduce((n, l) => n + item(l.sizeLabel) * l.qty, 0);
 }

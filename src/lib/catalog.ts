@@ -42,7 +42,7 @@ type SanityCandy = Omit<CandyOption, "extraChargeCents"> & { extraCharge: number
 
 const CANDIES = `*[_type == "candyOption"] | order(coalesce(sortOrder, 999) asc, name asc){
   "id": _id, name, "category": coalesce(category, "other"), "photo": photo.asset->url,
-  ingredientsAllergens, inStock, extraCharge
+  ingredientsAllergens, inStock, extraCharge, vegan
 }`;
 
 const FAQ = `*[_type == "faqItem"] | order(coalesce(sortOrder, 999) asc){ question, answer, topic, links }`;
@@ -111,6 +111,7 @@ export async function getCandies(): Promise<CandyOption[]> {
     photo: d.photo ?? candyPhoto(d.id),
     ingredientsAllergens: d.ingredientsAllergens ?? null,
     inStock: d.inStock ?? null,
+    vegan: d.vegan ?? null,
     extraChargeCents: toCents(extraCharge),
   }));
 }

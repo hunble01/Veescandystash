@@ -209,3 +209,31 @@ Last updated: 2026-10-26
   - **Menu regrouped** into To do / Everything / My shop. Order list rows show payment and pickup/delivery.
   - Studio on the live site needs `https://veescandystash.ca` (and www) added in sanity.io/manage → API → CORS origins with "Allow credentials". Vee is doing that herself (the token can't).
 - **2026-11-08 — Emails are NOT being sent.** `RESEND_API_KEY` is empty locally and on Netlify, so forms only save to the Studio inbox. 1 custom request (Birthday, 2026-11-08 evening) sits in the Studio and was never emailed. Fix: Resend account and key; NOTIFY_EMAIL_TO is contact@veescandystash.ca, to be confirmed with Vee.
+- **2026-11-09 — "Powered by Netlify" badge switched off** (Vee's request) in the Netlify project settings (`built_with_badge_enabled: false`). No rebuild needed.
+- **2026-11-09 — Checkout wording everywhere (local + Sanity drafts, not yet published):** new Policies section "Paying, pickup and delivery" (prices come from `site.fulfilment`); FAQ drafts faq-1 (how to order), NEW faq-13 "How do I pay?", faq-4 and faq-5 (local delivery, no more "worldwide"); `src/data/faq.ts` fallback matches. Ordering switches on once emails work (Resend key from Vee).
+- **2026-11-09 — Order form fills in logged-in customers' details** from their default saved address (name, phone, street, city, postal code) and email, only into empty boxes. Tested: cash pickup order, and the welcome code refused for a guest ("Please log in…"). Test orders deleted.
+- **2026-11-09 — Vee: "do all your suggestions".**
+  - Policies are final, and the DRAFT note is removed (local).
+  - Unpaid e-Transfer orders are cancelled after **48 hours** (`site.payments.payWithinHours`). This appears in Policies, on the order confirmation, in the customer email and in FAQ draft faq-13.
+  - Studio's Start here flags unpaid orders older than 48 h.
+  - All of this goes live with the email setup.
+
+## 2026-11-09: Grand-opening code, footer delivery
+- Pop-up and top bar now promote **WELCOME10**: 10% off any order, no account needed, for 1 week (`site.launchOffer`, ends `2026-11-17T00:00-05:00`, i.e. through Nov 16 if ordering opens Nov 10; adjust on launch day). The code stops working and the pop-up hides after `endsAt`; the top bar must be switched back by hand (advent-calendar text kept in a comment in site.ts).
+- The 5% account welcome code is paused (`welcomeDiscountPercent: null`). Note: the new pop-up no longer triggers the welcome-code email after login; re-add that call if the 5% offer comes back.
+- Footer shows "Delivery: Worldwide" (`site.fulfilment.footerDelivery`) at Vee's request. OPEN: checkout and policies still only offer local Vaughan/GTA delivery; shipping rates/policy needed before worldwide orders can be taken online.
+- Build Your Stash size tiles use Vee's bag photos (public/bags/, src/data/bagPhotos.ts), cut from her 1/2/4 lb comparison photo at the same scale. OPEN: no real 0.5 lb photo yet; that tile shows the 1 lb bag shrunk. The single full-size bag photo (neww/IMG_7925.jpg) isn't used yet.
+- Occasion tile titles now shrink to fit on narrow phones (container-query font size), fixing "Graduation" being cut off.
+- Regular-order refund window changed to 24 hours (Vee, 2026-11-09): policies.ts, faq.ts, Sanity drafts.faq-12 (publish with the rest). Top-bar label is orange and bigger.
+
+## 2026-11-09: Canada Post shipping replaces local delivery (local, not published)
+
+- Vee: free pickup stays; her own Vaughan/GTA delivery ($6/$12/free over $75) is **removed**; everyone else ships with **Canada Post**, **worldwide**, choosing **Standard** or **Express** at checkout with the live price for their address.
+- How: `src/lib/canadaPost.ts` calls Canada Post "Get Rates" (retail/counter price) from Vee's postal code. Standard = Regular Parcel (Canada) / Tracked Packet (US, international); Express = Xpresspost. The server re-quotes when the order is placed, so the customer can't change the price.
+- Checkout: "Ship it with Canada Post" → country, street, city, province/state, postal/ZIP → Standard/Express choices appear. Order saves the service in "Delivery zone" and the full address; emails say "Shipping".
+- Policies "Paying, pickup and delivery" and FAQ (faq-1, faq-4, faq-5 as Studio drafts + `src/data/faq.ts`) updated.
+- **Needed before shipping works** (until then checkout says shipping prices aren't available and to choose pickup):
+  - [ ] Vee: free Canada Post **Solutions for Small Business** account + **Developer Program** API keys.
+  - [ ] Env vars in `.env.local` and Netlify: `CANADA_POST_USERNAME`, `CANADA_POST_PASSWORD`, `CANADA_POST_ORIGIN_POSTAL_CODE` (Vee's Maple postal code; private), and `CANADA_POST_SANDBOX=1` only with test keys.
+  - [ ] Vee to weigh/measure a packed box: `site.fulfilment.shipping` (`packagingGrams` 250, `defaultItemGrams` 700, three box sizes) are **placeholders**.
+  - [ ] Shipping candy abroad: customs forms and food import rules vary by country; heat/melting in summer. Policies don't cover lost/delayed parcels yet.

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { BagIllustration } from "@/components/BagIllustration";
+import { bagPhoto } from "@/data/bagPhotos";
 import { cart, useCart } from "@/lib/cart";
 import { accentClasses, formatPrice } from "@/lib/format";
 import { useRecentlyViewed } from "@/lib/recentlyViewed";
@@ -56,8 +56,8 @@ function Suggestion({ product: p, recentlyViewed }: { product: Product; recently
         {p.photos[0] ? (
           <Image src={p.photos[0]} alt="" fill sizes="96px" className="object-cover" />
         ) : p.type === "builder" ? (
-          // Same bag drawing as Build Your Stash, sized like the 1 lb bag (Vee, 2026-11-05).
-          <BagIllustration scale={0.4} label="1 lb" />
+          // Vee's real 1 lb bag photo (2026-11-09), same as Build Your Stash.
+          <Image src={bagPhoto("1 lb")!} alt="" fill sizes="96px" className="object-contain p-1" />
         ) : null}
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">

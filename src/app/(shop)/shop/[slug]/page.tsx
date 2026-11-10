@@ -86,7 +86,7 @@ async function ProductContent({ params }: { params: PageProps<"/shop/[slug]">["p
                     // Vee's shop-wide allergen warning (2026-11-05).
                     <>
                       Not suitable for anyone with a severe food allergy. Our candy may contain milk, soy, wheat, peanuts, tree nuts or
-                      other allergens.{" "}
+                      other allergens. Almost all our candy contains gelatin, except candy labelled 🌱 Vegan.{" "}
                       <Link href="/policies#allergens" className="font-bold text-pink-deep underline underline-offset-4">
                         Allergens and ingredients
                       </Link>

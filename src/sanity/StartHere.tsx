@@ -6,12 +6,13 @@ import { IntentLink } from "sanity/router";
 // "Start here" page: the first thing Vee sees in the Studio. Shows what needs
 // doing today, with each item one tap away, and a short how-to.
 
-type Item = { _id: string; _type: string; title: string; sub: string; total?: number };
+type Item = { _id: string; _type: string; title: string; sub: string; total?: number; late?: boolean };
 type Data = { pay: Item[]; pack: Item[]; ready: Item[]; requests: Item[]; messages: Item[] };
 
 const QUERY = `{
   "pay": *[_type == "order" && status == "awaiting_payment"] | order(createdAt asc){ _id, _type,
-    "title": customer.name, total, "sub": orderNumber + " · " + select(paymentMethod == "cash" => "cash at pickup", "e-Transfer") },
+    "title": customer.name, total, "sub": orderNumber + " · " + select(paymentMethod == "cash" => "cash at pickup", "e-Transfer"),
+    "late": paymentMethod != "cash" && dateTime(createdAt) < dateTime(now()) - 60*60*48 },
   "pack": *[_type == "order" && status in ["new", "paid"]] | order(createdAt asc){ _id, _type,
     "title": customer.name, total, "sub": orderNumber + " · " + select(fulfilment == "delivery" => "delivery", "pickup") },
   "ready": *[_type == "order" && status in ["packed", "ready"]] | order(createdAt asc){ _id, _type,
@@ -43,6 +44,7 @@ function Section({ emoji, title, help, items, tone }: { emoji: string; title: st
                 <Stack gap={2}>
                   <Text size={2} weight="semibold" textOverflow="ellipsis">{it.title}{it.total != null ? ` · $${it.total.toFixed(2)}` : ""}</Text>
                   <Text size={1} muted textOverflow="ellipsis">{it.sub}</Text>
+                  {it.late && <Text size={1} weight="semibold">⚠️ Not paid after 48 hours: you can cancel it (↩️ in the order).</Text>}
                 </Stack>
               </Card>
             ))}
@@ -91,7 +93,7 @@ export function StartHere() {
         {data && (
           <>
             <Section emoji="⏳" title="Waiting for payment" tone="caution" items={data.pay}
-              help="Check your bank for an e-Transfer with this order number. When it’s there, open the order and tap “💰 Payment received”." />
+              help="Check your bank for an e-Transfer with this order number. When it’s there, open the order and tap “💰 Payment received”. Not paid after 48 hours? You can cancel it." />
             <Section emoji="📦" title="Paid: ready to pack" tone="primary" items={data.pack}
               help="Pack these, then tap “📦 Mark as packed”." />
             <Section emoji="🛍️" title="Packed: waiting for pickup or delivery" tone="positive" items={data.ready}

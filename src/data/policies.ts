@@ -10,13 +10,31 @@ export interface PolicySection {
   points: string[];
 }
 
+import { site } from "@/config/site";
+
+
 export const policies: PolicySection[] = [
+  {
+    // Vee, 2026-11-08: e-Transfer and cash; delivery prices from site config.
+    id: "paying",
+    title: "Paying, pickup and delivery",
+    points: [
+      "We take Interac e-Transfer and cash. After you place your order, you’ll get your order number and our e-Transfer details. Please put your order number in the e-Transfer message.",
+      "e-Transfer orders are packed once your payment arrives, and must be paid before pickup or delivery. Cash is for pickup orders only, paid when you pick up.",
+      ...(site.payments.payWithinHours
+        ? [`Please send your e-Transfer within ${site.payments.payWithinHours} hours of placing your order. If it hasn’t arrived by then, your order will be cancelled.`]
+        : []),
+      `Pickup in ${site.fulfilment.pickupArea ?? "Vaughan"} is free. We’ll email you the address and a time when your order is ready.`,
+      // Canada Post shipping (Vee, 2026-11-09), priced live at checkout.
+      `Shipping: we ship across Canada and around the world with ${site.fulfilment.shipping.carrier}. Choose Standard or Express at checkout, and the shipping price for your address is added automatically.`,
+    ],
+  },
   {
     id: "refunds",
     title: "Refunds and cancellations",
     points: [
       "If your bag or candy arrives damaged, or your order isn’t right, please email us at contact@veescandystash.ca with a photo, your order number and name so we can look into it.",
-      "Regular orders: you can cancel for a full refund within 72 hours (3 days) of placing your order. After 72 hours, orders can’t be cancelled or refunded.",
+      "Regular orders: you can cancel for a full refund within 24 hours of placing your order. After 24 hours, orders can’t be cancelled or refunded.",
       "Custom and event orders: you can cancel for a full refund within 48 hours of placing your order. After 48 hours, cancelling refunds 50% of your payment. Cancelling 5 days or less before your event is not refunded.",
     ],
   },
@@ -35,9 +53,14 @@ export const policies: PolicySection[] = [
   {
     // Vee, 2026-11-05: welcome code rules.
     id: "welcome-code",
-    title: "Welcome discount",
+    title: "Discount codes",
     points: [
-      "Our 5% welcome code is for your first order only, for customers with an account. We email it to you when you create your account. It can’t be combined with other codes or used on a past order.",
+      ...(site.launchOffer
+        ? [`Grand opening: use code ${site.launchOffer.code} for ${site.launchOffer.percent}% off your order during our first week. No account needed. It can’t be combined with other codes or used on a past order.`]
+        : []),
+      ...(site.welcomeDiscountPercent
+        ? [`Our ${site.welcomeDiscountPercent}% welcome code is for your first order only, for customers with an account. We email it to you when you create your account. It can’t be combined with other codes or used on a past order.`]
+        : []),
     ],
   },
   {
@@ -49,7 +72,7 @@ export const policies: PolicySection[] = [
       "We buy our candy from a number of different makers and pack every order in a shared space, so we can’t promise any candy is free from allergens. If you have a severe allergy, please don’t order from us. We’d rather keep you safe.",
       "Our candy may contain milk, soy, wheat, peanuts, tree nuts or other allergens.",
       "Have a question about a certain candy? Email us at {email} before you order and we’ll happily help. We usually reply within 3 business days.",
-      "What’s usually inside: most of our gummies contain sugar, glucose syrup, starch (from corn, potato or wheat), gelatin, food acids (citric, malic and lactic), natural and artificial flavours, vegetable oil, a shiny coating (carnauba wax or beeswax) and food colours, which may include Red 40, Yellow 5, Yellow 6 and Blue 1.",
+      "What’s inside: almost all of our candy (everything except candy labelled 🌱 Vegan) contains sugar, glucose syrup, starch (from corn, potato or wheat), gelatin, food acids (citric, malic and lactic), natural and artificial flavours, vegetable oil, a shiny coating (carnauba wax or beeswax) and food colours, which may include Red 40, Yellow 5, Yellow 6 and Blue 1.",
     ],
   },
   {

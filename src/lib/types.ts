@@ -41,6 +41,8 @@ export interface CandyOption {
   ingredientsAllergens: string | null;
   inStock: boolean | null;
   extraChargeCents: number | null;
+  /** Vee marks a candy vegan in the Studio (2026-11-09: the Bubs candies). */
+  vegan?: boolean | null;
 }
 
 // A ready-made look Vee offers for an occasion or holiday, e.g. red and

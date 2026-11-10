@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ButtonLink, Container, DraftNote, PageHeader } from "@/components/ui";
+import { ButtonLink, Container, PageHeader } from "@/components/ui";
 import { site } from "@/config/site";
 import { policies } from "@/data/policies";
 
@@ -33,9 +33,6 @@ export default function PoliciesPage() {
     <>
       <PageHeader eyebrow="Policies & Conditions" title="The sweet print." intro="How orders, refunds, your candy and your privacy are handled." />
       <Container className="max-w-3xl py-12">
-        <div className="mb-10">
-          <DraftNote>Policies are still being written by Vee. Nothing here is final until this note is removed.</DraftNote>
-        </div>
         {policies.map((section) => (
           <section key={section.id} id={section.id} className="mb-8 scroll-mt-28 rounded-2xl bg-white border-[3px] border-ink p-6 shadow-[var(--shadow-pop)]">
             <h2 className="mb-4 text-2xl font-semibold">{section.title}</h2>

@@ -14,10 +14,11 @@ export const site = {
   // to null to show the labelled placeholder. We never draw our own logo.
   logo: { src: "/logo.png", width: 320, height: 320 } as { src: string; width: number; height: number } | null,
 
-  // Top teal bar. announcementHref makes it a link (Vee, 2026-11-04: promote
-  // the advent calendar).
-  announcement: "🎄 NEW: the Christmas Advent Calendar, 24 days of candy surprises!" as string | null,
-  announcementHref: "/shop/christmas-advent-calendar" as string | null,
+  // Top teal bar. announcementHref makes it a link. Grand-opening code for now
+  // (Vee, 2026-11-09). The advent calendar one, to switch back after:
+  //   "🎄 NEW: the Christmas Advent Calendar, 24 days of candy surprises!" → "/shop/christmas-advent-calendar"
+  announcement: "🎉 Grand opening! 10% off everything for 1 week with code WELCOME10" as string | null,
+  announcementHref: "/build-your-stash" as string | null,
 
   // Big promo on the home page, under the ribbons. Points at a product in
   // Sanity by its slug; set to null to hide it (e.g. after Christmas).
@@ -47,18 +48,32 @@ export const site = {
   fulfilment: {
     // Which options checkout offers. Empty until Vee decides, and checkout
     // stays off until at least one is set.
+    // Free pickup, or shipping anywhere with Canada Post (Vee, 2026-11-09:
+    // replaces her own Vaughan/GTA delivery). "delivery" = Canada Post.
     methods: ["pickup", "delivery"] as ("pickup" | "delivery")[],
     pickupArea: "Vaughan, Ontario" as string | null,
-    // Local delivery only while payment is e-Transfer/cash (Vee, 2026-11-08:
-    // "use your suggestions"). Fees are in cents; edit freely.
-    deliveryArea: "Vaughan and nearby GTA" as string | null,
-    deliveryZones: [
-      { id: "vaughan", label: "Vaughan (Woodbridge, Maple, Concord, Kleinburg, Thornhill)", feeCents: 600 },
-      { id: "gta", label: "Nearby GTA (Richmond Hill, Markham, North York, Etobicoke, Brampton)", feeCents: 1200 },
-    ] as readonly { id: string; label: string; feeCents: number }[],
-    // Free delivery when the order (after discounts) reaches this. null = never free.
-    freeDeliveryOverCents: 7500 as number | null,
-    shipping: null as string | null,
+    // Canada Post prices are looked up live for the customer's address
+    // (src/lib/canadaPost.ts) from Vee's postal code in Maple. Keys and the
+    // postal code live in .env.local / Netlify, never here:
+    //   CANADA_POST_USERNAME, CANADA_POST_PASSWORD,
+    //   CANADA_POST_ORIGIN_POSTAL_CODE, CANADA_POST_SANDBOX=1 (test keys only)
+    shipping: {
+      carrier: "Canada Post",
+      // Parcel size used for the price. PLACEHOLDERS until Vee weighs and
+      // measures a packed box: candy weight comes from the bag size
+      // ("1 lb" etc.), plus the box and padding below.
+      packagingGrams: 250,
+      // Products without a weight in their size name (e.g. the advent calendar).
+      defaultItemGrams: 700,
+      // The smallest box that fits the weight is used. Sizes in cm.
+      boxes: [
+        { upToGrams: 1000, lengthCm: 23, widthCm: 18, heightCm: 10 },
+        { upToGrams: 3000, lengthCm: 30, widthCm: 23, heightCm: 15 },
+        { upToGrams: 30000, lengthCm: 40, widthCm: 30, heightCm: 25 },
+      ],
+    },
+    // Shown under "Delivery" in the footer (Vee, 2026-11-09). null hides it.
+    footerDelivery: "Worldwide" as string | null,
     handlingTime: "About 3 business days in the GTA" as string | null,
   },
 
@@ -71,6 +86,8 @@ export const site = {
     eTransferEmail: "vpanetta03@icloud.com" as string | null,
     // Cash is only offered for pickup, paid when the order is picked up.
     cash: true,
+    // Unpaid e-Transfer orders are cancelled after this (Vee, 2026-11-09).
+    payWithinHours: 48 as number | null,
   },
 
   // Sizes offered in the occasion/holiday and custom order forms (Vee, 2026-10-29;
@@ -97,8 +114,19 @@ export const site = {
   // create an account we email them this code, and it takes the % off their
   // FIRST order when typed in the cart (checked on the server). Set
   // welcomeDiscountPercent to null to switch the whole offer off.
-  welcomeDiscountPercent: 5 as number | null,
+  // Paused during the grand-opening offer below (Vee, 2026-11-09); set back to 5 after.
+  welcomeDiscountPercent: null as number | null,
   welcomeCode: "5OFF!",
+
+  // Grand-opening special (Vee, 2026-11-09): "10% off, 1 week, no account
+  // needed, code WELCOME10 in the pop-up". Anyone can use it, on any order,
+  // until endsAt; after that the code stops working and the pop-up hides
+  // itself. Set endsAt to one week after ordering opens. null = switched off.
+  launchOffer: {
+    code: "WELCOME10",
+    percent: 10,
+    endsAt: "2026-11-17T00:00:00-05:00", // through Sunday Nov 16 if we open Nov 10
+  } as { code: string; percent: number; endsAt: string } | null,
 
   // Products hidden from the whole site (Vee, 2026-11-05: "take out ready
   // made mixes"). Remove a slug here to bring that product back.

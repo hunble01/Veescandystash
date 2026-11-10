@@ -1,16 +1,30 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
-import { useState, useTransition } from "react";
-import { placeOrder, type PlacedOrder } from "./actions";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { myCheckoutDefaults, placeOrder, quoteShipping, type PlacedOrder } from "./actions";
 import { GummyBear, Sparkle, candyColours as k } from "@/components/Candies";
-import { Field, Input, Textarea, describedBy } from "@/components/form";
+import { Field, Input, Select, Textarea, describedBy } from "@/components/form";
+import { POSTAL_RULES, countryOptions } from "@/data/countries";
+import type { ShipQuote } from "@/lib/canadaPost";
 import { Button, ButtonLink } from "@/components/ui";
+import { PromoCode } from "@/components/PromoCode";
 import { cart, saveCode, useCart, useSavedCode } from "@/lib/cart";
 import { describePicks, formatPrice } from "@/lib/format";
 
-type Zone = { id: string; label: string; feeCents: number };
+type Quotes = { state: "idle" | "loading" | "ok" | "error"; quotes: ShipQuote[]; message: string };
+const days = (d: number | null) => (d ? ` · about ${d} business day${d === 1 ? "" : "s"} in transit` : "");
+
+// Fill empty fields from the customer's account (saved default address).
+// Written straight into the inputs so nothing they've typed is replaced.
+function fillEmpty(form: HTMLFormElement | null, d: Record<string, string> | null) {
+  if (!d || !form) return;
+  for (const [name, value] of Object.entries(d)) {
+    const input = form.elements.namedItem(name);
+    if (input instanceof HTMLInputElement && !input.value && value) input.value = value;
+  }
+}
 
 const panel = "rounded-[var(--radius-card)] border-[3px] border-ink bg-white p-6 shadow-[var(--shadow-pop)] sm:p-8";
 
@@ -28,35 +42,97 @@ function Choice({ name, value, checked, onChange, title, detail }: { name: strin
 
 export function CheckoutForm({
   pickup,
-  zones,
-  freeDeliveryOverCents,
+  shipping,
   cash,
   contactEmail,
 }: {
   pickup: string | null;
-  zones: Zone[];
-  freeDeliveryOverCents: number | null;
+  /** Carrier name when shipping is offered (Canada Post), else null. */
+  shipping: string | null;
   cash: boolean;
   contactEmail: string | null;
 }) {
   const { lines, subtotalCents } = useCart();
-  const { user } = useUser();
-  const [fulfilment, setFulfilment] = useState(pickup ? "pickup" : zones[0]?.id ?? "");
+  const { isSignedIn } = useAuth();
+  const formRef = useRef<HTMLFormElement>(null);
+  const defaults = useRef<Awaited<ReturnType<typeof myCheckoutDefaults>>>(null);
+  // "pickup" or "ship"; when shipping, the customer then picks Standard or Express.
+  const [fulfilment, setFulfilment] = useState(pickup ? "pickup" : shipping ? "ship" : "");
+  const [speed, setSpeed] = useState<"standard" | "express">("standard");
+  const [country, setCountry] = useState("CA");
+  const [postal, setPostal] = useState("");
+  const [rates, setRates] = useState<Quotes>({ state: "idle", quotes: [], message: "" });
+  const [countries] = useState(countryOptions);
   const [chosenPayment, setPayment] = useState("etransfer");
   const saved = useSavedCode();
-  const [removed, setRemoved] = useState(false);
-  const code = removed ? "" : saved;
+  const [promo, setPromo] = useState({ code: "", percent: 0 });
+  const code = promo.code;
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [problem, setProblem] = useState("");
   const [placed, setPlaced] = useState<PlacedOrder | null>(null);
   const [sending, startSending] = useTransition();
 
-  const zone = zones.find((z) => z.id === fulfilment);
+  useEffect(() => {
+    if (!isSignedIn) return;
+    let live = true;
+    myCheckoutDefaults()
+      .then((d) => {
+        if (!live) return;
+        defaults.current = d;
+        fillEmpty(formRef.current, d);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [isSignedIn]);
+  // The address boxes only appear once shipping is chosen: fill them then.
+  useEffect(() => {
+    fillEmpty(formRef.current, defaults.current);
+    const pc = formRef.current?.elements.namedItem("postalCode");
+    if (pc instanceof HTMLInputElement && pc.value) setPostal(pc.value);
+  }, [fulfilment]);
+
+  // Live Canada Post prices once the address has a country and a postal code
+  // (Vee, 2026-11-09). Waits for the customer to stop typing.
+  const ship = fulfilment === "ship";
+  const rule = POSTAL_RULES[country];
+  const postalOk = rule ? rule.re.test(postal.trim()) : true;
+  const cartKey = lines.map((l) => `${l.id}x${l.qty}`).join(",");
+  useEffect(() => {
+    if (!ship || !postalOk) return;
+    let live = true;
+    const t = setTimeout(() => {
+      setRates((r) => ({ ...r, state: "loading", message: "" }));
+      quoteShipping({
+        lines: lines.map((l) => ({ productId: l.productId, sizeId: l.sizeId, candyIds: l.candies?.map((c) => c.id), qty: l.qty })),
+        country,
+        postalCode: postal,
+      })
+        .then((r) => {
+          if (!live) return;
+          if (r.ok) {
+            setRates({ state: "ok", quotes: r.quotes, message: "" });
+            setSpeed((s) => (r.quotes.some((q) => q.speed === s) ? s : r.quotes[0].speed));
+          } else setRates({ state: "error", quotes: [], message: r.message });
+        })
+        .catch(() => live && setRates({ state: "error", quotes: [], message: "We couldn’t get shipping prices just now. Please try again." }));
+    }, 600);
+    return () => {
+      live = false;
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ship, country, postal, postalOk, cartKey]);
+  const quote = ship && rates.state === "ok" ? rates.quotes.find((q) => q.speed === speed) ?? null : null;
+
   const cashOk = cash && fulfilment === "pickup";
   const payment = cashOk ? chosenPayment : "etransfer";
 
   // Estimate only: the server works out the real total (and checks the code).
-  const deliveryCents = zone ? (freeDeliveryOverCents != null && subtotalCents >= freeDeliveryOverCents ? 0 : zone.feeCents) : 0;
+  const discountCents = Math.round((subtotalCents * promo.percent) / 100);
+  const afterDiscountCents = subtotalCents - discountCents;
+  const deliveryCents = quote?.cents ?? 0;
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -71,10 +147,12 @@ export function CheckoutForm({
         name: get("name"),
         email: get("email"),
         phone: get("phone"),
-        fulfilment,
+        fulfilment: ship ? speed : fulfilment,
         street: get("street"),
         city: get("city"),
+        province: get("province"),
         postalCode: get("postalCode"),
+        country,
         payment,
         notes: get("notes"),
         website: get("website"),
@@ -116,6 +194,7 @@ export function CheckoutForm({
 
   return (
     <form
+      ref={formRef}
       noValidate
       onSubmit={onSubmit}
       // Clear a field's error as soon as it's changed.
@@ -128,11 +207,11 @@ export function CheckoutForm({
         <section className={`space-y-5 ${panel}`}>
           <h2 className="text-3xl">1. Your details</h2>
           <Field id="name" label="Name" required error={errors.name}>
-            <Input {...props("name")} autoComplete="name" defaultValue={user?.fullName ?? ""} />
+            <Input {...props("name")} autoComplete="name" />
           </Field>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field id="email" label="Email" required error={errors.email}>
-              <Input type="email" {...props("email")} autoComplete="email" defaultValue={user?.primaryEmailAddress?.emailAddress ?? ""} />
+              <Input type="email" {...props("email")} autoComplete="email" />
             </Field>
             <Field id="phone" label="Phone" required error={errors.phone}>
               <Input type="tel" {...props("phone")} autoComplete="tel" />
@@ -141,37 +220,56 @@ export function CheckoutForm({
         </section>
 
         <section className={`space-y-4 ${panel}`}>
-          <h2 className="text-3xl">2. Pickup or delivery</h2>
-          <div role="radiogroup" aria-label="Pickup or delivery" className="grid gap-3">
+          <h2 className="text-3xl">2. Pickup or shipping</h2>
+          <div role="radiogroup" aria-label="Pickup or shipping" className="grid gap-3">
             {pickup && <Choice name="fulfilment" value="pickup" checked={fulfilment === "pickup"} onChange={setFulfilment} title={`Pickup in ${pickup} · Free`} detail="Vee will email you the address and a time when it’s ready." />}
-            {zones.map((z) => (
-              <Choice
-                key={z.id}
-                name="fulfilment"
-                value={z.id}
-                checked={fulfilment === z.id}
-                onChange={setFulfilment}
-                title={`Delivery · ${formatPrice(z.feeCents)}`}
-                detail={z.label}
-              />
-            ))}
+            {shipping && (
+              <Choice name="fulfilment" value="ship" checked={ship} onChange={setFulfilment} title={`Ship it with ${shipping}`} detail="Anywhere in Canada or around the world. Add your address to see Standard and Express prices." />
+            )}
           </div>
-          {zones.length > 0 && freeDeliveryOverCents != null && (
-            <p className="text-sm font-bold text-teal-deep">🚚 Free delivery on orders of {formatPrice(freeDeliveryOverCents)} or more.</p>
-          )}
           {errors.fulfilment && <p className="text-sm font-semibold text-pink-deep">{errors.fulfilment}</p>}
-          {zone && (
+          {ship && (
             <div className="space-y-5 pt-2">
+              <Field id="country" label="Country" required error={errors.country}>
+                <Select {...props("country")} value={country} onChange={(e) => setCountry(e.target.value)} autoComplete="country">
+                  {countries.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
+                </Select>
+              </Field>
               <Field id="street" label="Street address" required error={errors.street}>
                 <Input {...props("street")} autoComplete="street-address" />
               </Field>
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-5 sm:grid-cols-3">
                 <Field id="city" label="Town / city" required error={errors.city}>
                   <Input {...props("city")} autoComplete="address-level2" />
                 </Field>
-                <Field id="postalCode" label="Postal code" required error={errors.postalCode}>
-                  <Input {...props("postalCode")} autoComplete="postal-code" autoCapitalize="characters" />
+                <Field id="province" label={country === "US" ? "State" : country === "CA" ? "Province" : "Province / region"} required={country === "CA" || country === "US"} error={errors.province}>
+                  <Input {...props("province")} autoComplete="address-level1" />
                 </Field>
+                <Field id="postalCode" label={rule?.label ?? "Postal code"} required={Boolean(rule)} error={errors.postalCode}>
+                  <Input {...props("postalCode")} autoComplete="postal-code" autoCapitalize="characters" placeholder={rule?.example} onInput={(e) => setPostal(e.currentTarget.value)} />
+                </Field>
+              </div>
+
+              {/* Canada Post Standard / Express with the live price */}
+              <div aria-live="polite">
+                {!postalOk && rates.state !== "ok" && <p className="text-sm font-medium text-ink-soft">Add your {rule?.label.toLowerCase() ?? "postal code"} to see shipping prices.</p>}
+                {postalOk && rates.state === "loading" && <p className="text-sm font-bold text-ink-soft">Getting {shipping} prices…</p>}
+                {postalOk && rates.state === "error" && <p className="rounded-xl bg-pink-soft px-4 py-3 text-sm font-semibold text-pink-deep">{rates.message}</p>}
+                {postalOk && rates.state === "ok" && (
+                  <div role="radiogroup" aria-label="Shipping speed" className="grid gap-3 sm:grid-cols-2">
+                    {rates.quotes.map((q) => (
+                      <Choice
+                        key={q.speed}
+                        name="speed"
+                        value={q.speed}
+                        checked={speed === q.speed}
+                        onChange={(v) => setSpeed(v as "standard" | "express")}
+                        title={`${q.speed === "express" ? "Express" : "Standard"} · ${formatPrice(q.cents)}`}
+                        detail={`${q.service}${days(q.days)}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -212,14 +310,14 @@ export function CheckoutForm({
         </ul>
         <dl className="mt-4 space-y-2 border-t-[3px] border-ink pt-4">
           <div className="flex justify-between"><dt>Subtotal</dt><dd className="font-bold">{formatPrice(subtotalCents)}</dd></div>
-          <div className="flex justify-between"><dt>{zone ? "Delivery" : "Pickup"}</dt><dd className="font-bold">{deliveryCents ? formatPrice(deliveryCents) : "Free"}</dd></div>
-          {code && <div className="flex justify-between text-sm"><dt>Code {code.toUpperCase()}</dt><dd className="font-bold">applied when you order</dd></div>}
-          <div className="flex justify-between text-lg"><dt className="font-extrabold">Total</dt><dd className="font-extrabold">{formatPrice(subtotalCents + deliveryCents)}{code ? "*" : ""}</dd></div>
+          <div className="flex justify-between"><dt>{ship ? "Shipping" : "Pickup"}</dt><dd className="font-bold">{ship ? (quote ? formatPrice(quote.cents) : "Add address") : "Free"}</dd></div>
+          {discountCents > 0 && <div className="flex justify-between"><dt>Promo {code} ({promo.percent}% off)</dt><dd className="font-bold">−{formatPrice(discountCents)}</dd></div>}
+          <div className="flex justify-between text-lg"><dt className="font-extrabold">Total</dt><dd className="font-extrabold">{formatPrice(afterDiscountCents + deliveryCents)}</dd></div>
         </dl>
-        {code && <p className="mt-1 text-xs font-medium text-ink-soft">*Before your discount. Your final total shows on the next screen.</p>}
+        <PromoCode initialCode={saved} onChange={(c, percent) => { setPromo({ code: c, percent }); setErrors((e) => ({ ...e, code: "" })); }} />
         {errors.code && (
           <p role="alert" className="mt-3 rounded-xl bg-pink-soft px-4 py-3 text-sm font-semibold text-pink-deep">
-            {errors.code} <button type="button" className="underline" onClick={() => { setRemoved(true); setErrors({}); saveCode(""); }}>Remove code</button>
+            {errors.code}
           </p>
         )}
         {problem && (
@@ -259,6 +357,7 @@ function Placed({ order, pickup, contactEmail }: { order: PlacedOrder; pickup: s
             <li>Amount: <b>{total}</b></li>
             <li>Send to: <b className="break-all">{order.eTransferEmail}</b></li>
             <li>In the message, write your order number: <b>{order.orderNumber}</b></li>
+            {order.payWithinHours && <li>Please send it within <b>{order.payWithinHours} hours</b>, or your order will be cancelled.</li>}
           </ol>
         ) : (
           <p className="text-lg font-medium">Bring <b>{total}</b> in cash when you pick up your order.</p>
@@ -267,7 +366,7 @@ function Placed({ order, pickup, contactEmail }: { order: PlacedOrder; pickup: s
           {order.payment === "etransfer" ? "We start packing as soon as your payment arrives. " : ""}
           {order.fulfilment === "pickup"
             ? `Pickup is in ${pickup ?? "Vaughan"}: Vee will email you the address and a time when your order is ready.`
-            : "Vee will email you when your order is on its way."}
+            : "Vee will email you your tracking number when your order ships."}
         </p>
       </div>
 
@@ -275,7 +374,7 @@ function Placed({ order, pickup, contactEmail }: { order: PlacedOrder; pickup: s
         <dl className="space-y-1">
           <div className="flex justify-between"><dt>Subtotal</dt><dd className="font-bold">{formatPrice(order.subtotalCents)}</dd></div>
           {order.discountCents > 0 && <div className="flex justify-between"><dt>Discount</dt><dd className="font-bold">−{formatPrice(order.discountCents)}</dd></div>}
-          <div className="flex justify-between"><dt>{order.fulfilment === "delivery" ? "Delivery" : "Pickup"}</dt><dd className="font-bold">{order.deliveryCents ? formatPrice(order.deliveryCents) : "Free"}</dd></div>
+          <div className="flex justify-between"><dt>{order.fulfilment === "delivery" ? "Shipping" : "Pickup"}</dt><dd className="font-bold">{order.deliveryCents ? formatPrice(order.deliveryCents) : "Free"}</dd></div>
           <div className="flex justify-between text-lg"><dt className="font-extrabold">Total</dt><dd className="font-extrabold">{total}</dd></div>
         </dl>
         <p className="pt-2 text-sm font-medium text-ink-soft">

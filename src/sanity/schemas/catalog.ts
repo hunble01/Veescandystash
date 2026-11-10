@@ -145,6 +145,7 @@ export const candyOption = defineType({
     defineField({ name: "photo", type: "image", options: { hotspot: true } }),
     defineField({ name: "ingredientsAllergens", title: "Ingredients & allergens", type: "text", rows: 4 }),
     defineField({ name: "inStock", title: "In stock", type: "boolean", initialValue: true }),
+    defineField({ name: "vegan", title: "Vegan", type: "boolean", initialValue: false, description: "Shows a 🌱 Vegan badge and puts it in the Vegan section of Build Your Stash. Only tick it if the packet says vegan." }),
     defineField({ name: "extraCharge", title: "Extra charge (CAD $)", type: "number", description: "Added to the bag price when a customer picks this candy. Leave empty for no extra charge.", validation: (r) => r.min(0).precision(2) }),
     defineField({ name: "sortOrder", title: "Sort order", type: "number", description: "Lower numbers show first." }),
   ],

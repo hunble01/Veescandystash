@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui";
 import { BagIllustration } from "@/components/BagIllustration";
 import { PhotoPlaceholder } from "@/components/PhotoPlaceholder";
+import { bagPhoto } from "@/data/bagPhotos";
 import { cart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { MAX_PICKS } from "@/lib/limits";
@@ -63,7 +64,7 @@ export function StashBuilder({ product, candies, orderingOpen }: { product: Prod
   const bagId = useSearchParams().get("bag");
   const size = sizes.find((s) => s.id === bagId);
   const [picked, setPicked] = useState<string[]>([]); // candy ids, repeats allowed
-  const [filter, setFilter] = useState<CandyOption["category"] | "all">("all");
+  const [filter, setFilter] = useState<CandyOption["category"] | "all" | "vegan">("all");
   const [added, setAdded] = useState(0);
   const topRef = useRef<HTMLDivElement>(null);
   const keepPicks = useRef(false);
@@ -85,9 +86,12 @@ export function StashBuilder({ product, candies, orderingOpen }: { product: Prod
   const limit = size?.pickAllowance ?? null;
   const max = limit ?? MAX_PICKS;
   const full = picked.length >= max;
-  // Filter buttons are only All, Sweet and Sour (Vee's request, 2026-10-30).
-  const categories = (["sweet", "sour"] as const).filter((cat) => candies.some((c) => c.category === cat));
-  const shown = filter === "all" ? candies : candies.filter((c) => c.category === filter);
+  // Filter buttons: All, Sweet, Sour (Vee, 2026-10-30) and Vegan (Vee, 2026-11-09).
+  const categories = [
+    ...(["sweet", "sour"] as const).filter((cat) => candies.some((c) => c.category === cat)),
+    ...(candies.some((c) => c.vegan) ? (["vegan"] as const) : []),
+  ];
+  const shown = filter === "all" ? candies : filter === "vegan" ? candies.filter((c) => c.vegan) : candies.filter((c) => c.category === filter);
   const count = (id: string) => picked.filter((x) => x === id).length;
   // Each candy once, in the order it was first picked.
   const bag = [...new Set(picked)].map((id) => candies.find((c) => c.id === id)).filter((c) => c != null);
@@ -153,8 +157,8 @@ export function StashBuilder({ product, candies, orderingOpen }: { product: Prod
                 className={`${choiceCard} cursor-pointer has-checked:border-ink has-checked:bg-orange-soft has-checked:shadow-[var(--shadow-pop)] has-focus-visible:outline-3 has-focus-visible:outline-teal`}
               >
                 <input type="radio" name="size" value={s.id} checked={false} onChange={() => chooseSize(s.id)} className="sr-only" />
-                {s.photo ? (
-                  <Photo src={s.photo} alt={`${s.label} bag`} label="" accent="orange" />
+                {bagPhoto(s.label) ?? s.photo ? (
+                  <Photo src={bagPhoto(s.label) ?? s.photo} alt={`${s.label} bag of candy`} label="" accent="orange" />
                 ) : (
                   <BagIllustration scale={sizes.length > 1 ? i / (sizes.length - 1) : 1} label={s.label} />
                 )}
@@ -256,7 +260,7 @@ export function StashBuilder({ product, candies, orderingOpen }: { product: Prod
                   onClick={() => setFilter(c)}
                   className="min-h-11 rounded-full border-[3px] border-ink/80 bg-white px-4 font-bold transition aria-pressed:border-ink aria-pressed:bg-pink-soft"
                 >
-                  {c === "all" ? "All" : categoryLabel[c]}
+                  {c === "all" ? "All" : c === "vegan" ? "🌱 Vegan" : categoryLabel[c]}
                 </button>
               ))}
             </div>
@@ -284,6 +288,7 @@ export function StashBuilder({ product, candies, orderingOpen }: { product: Prod
                       <span className="mt-3 px-2 text-lg leading-tight font-extrabold">{c.name}</span>
                       <span className="px-2 pb-2 text-sm font-semibold text-ink-soft">
                         {soldOut ? "Sold out" : categoryLabel[c.category]}
+                        {!soldOut && c.vegan ? " · 🌱 Vegan" : ""}
                         {!soldOut && c.extraChargeCents ? ` · +${formatPrice(c.extraChargeCents)}` : ""}
                       </span>
                     </button>

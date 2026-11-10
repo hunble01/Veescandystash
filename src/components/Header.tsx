@@ -39,9 +39,10 @@ function HeaderView({ pathname }: { pathname: string }) {
   return (
     <header className="sticky top-0 z-40">
       {site.announcement && (
-        // Teal bar; the words sit on a red label (Vee, 2026-11-05).
-        <p className="border-b-[3px] border-ink bg-teal px-3 py-1.5 text-center text-sm font-bold">
-          <span className="inline-block rounded-full border-2 border-ink bg-holiday-red px-3 py-0.5 text-white">
+        // Teal bar; the words sit on an orange label, a bit bigger for the
+        // grand opening (Vee, 2026-11-09; was red, text-sm).
+        <p className="border-b-[3px] border-ink bg-teal px-3 py-2 text-center text-base font-extrabold sm:text-lg">
+          <span className="inline-block rounded-full border-[3px] border-ink bg-orange px-4 py-1 text-white shadow-[2px_2px_0_var(--color-ink)] [text-shadow:1px_1px_0_var(--color-ink)]">
             {site.announcementHref ? (
               <Link href={site.announcementHref} className="underline-offset-4 hover:underline">
                 {site.announcement} <span aria-hidden>→</span>

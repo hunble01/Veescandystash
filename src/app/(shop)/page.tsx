@@ -45,7 +45,7 @@ export default async function Home() {
 
       {/* Crossed ticker ribbons */}
       <div className="relative -mt-6 overflow-hidden py-10">
-        <Marquee className="-rotate-3 bg-orange" items={["Sweet", "Sour", "Stashed", "Party-ready", "Gift-ready"]} />
+        <Marquee className="-rotate-3 bg-orange" items={["Sweet", "Sour", "Sweet tooth", "Party-ready", "Gift-ready"]} />
         <Marquee className="relative z-10 -mt-2 rotate-2 bg-teal" reverse star={k.ink} items={["Birthdays", "Baby showers", "Graduations", "Gender reveals", "Holidays"]} />
       </div>
 

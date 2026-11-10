@@ -18,8 +18,7 @@ export default function CheckoutPage() {
       <Container className="pb-20">
         <CheckoutForm
           pickup={f.methods.includes("pickup") ? f.pickupArea ?? "Vaughan" : null}
-          zones={f.methods.includes("delivery") ? f.deliveryZones.map((z) => ({ ...z })) : []}
-          freeDeliveryOverCents={f.freeDeliveryOverCents}
+          shipping={f.methods.includes("delivery") ? f.shipping.carrier : null}
           cash={site.payments.cash}
           contactEmail={site.contact.email}
         />
