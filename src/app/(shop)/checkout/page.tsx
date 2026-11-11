@@ -4,7 +4,7 @@ import { CheckoutForm } from "./CheckoutForm";
 import { site } from "@/config/site";
 import { Container, PageHeader } from "@/components/ui";
 import { checkoutBlockers } from "@/lib/readiness";
-import { canadaPostReady } from "@/lib/canadaPost";
+import { shippingAreaText, shippingCountries, shippingReady } from "@/lib/shipping";
 
 export const metadata: Metadata = { title: "Place your order", robots: { index: false } };
 
@@ -19,8 +19,10 @@ export default function CheckoutPage() {
       <Container className="pb-20">
         <CheckoutForm
           pickup={f.methods.includes("pickup") ? f.pickupArea ?? "Vaughan" : null}
-          // Shipping shows only once the Canada Post keys are set (pickup only until then).
-          shipping={f.methods.includes("delivery") && canadaPostReady() ? f.shipping.carrier : null}
+          // Shipping shows once "delivery" is on and flat prices (or Canada Post keys) are set.
+          shipping={f.methods.includes("delivery") && shippingReady() ? f.shipping.carrier : null}
+          shippingArea={shippingAreaText()}
+          shippingCountries={shippingCountries()}
           cash={site.payments.cash}
           contactEmail={site.contact.email}
         />

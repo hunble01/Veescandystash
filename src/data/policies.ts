@@ -27,7 +27,9 @@ export const policies: PolicySection[] = [
       `Pickup in ${site.fulfilment.pickupArea ?? "Vaughan"} is free. We’ll email you the address and a time when your order is ready.`,
       // Canada Post shipping (Vee, 2026-11-09), priced live at checkout.
       site.fulfilment.methods.includes("delivery")
-        ? `Shipping: we ship across Canada and around the world with ${site.fulfilment.shipping.carrier}. Choose Standard or Express at checkout, and the shipping price for your address is added automatically.`
+        ? site.fulfilment.shipping.pricing === "flat"
+          ? `Shipping: we ship anywhere in Canada with ${site.fulfilment.shipping.carrier} at a set price for your area, shown at checkout before you place your order. We don’t ship outside Canada yet.${site.fulfilment.shipping.freeStandardOverCents != null ? ` Standard shipping is free on orders of $${(site.fulfilment.shipping.freeStandardOverCents / 100).toFixed(2)} or more.` : ""}`
+          : `Shipping: we ship across Canada and around the world with ${site.fulfilment.shipping.carrier}. Choose Standard or Express at checkout, and the shipping price for your address is added automatically.`
         : `Shipping: coming soon with ${site.fulfilment.shipping.carrier}. For now, all orders are free pickup in ${site.fulfilment.pickupArea ?? "Vaughan"}.`,
     ],
   },

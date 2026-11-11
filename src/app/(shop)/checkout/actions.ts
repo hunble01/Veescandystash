@@ -5,7 +5,7 @@ import { site } from "@/config/site";
 import { getAddresses, getCustomer } from "@/lib/account";
 import { escapeHtml, notifyOwner, sendOrderInstructions } from "@/lib/notify";
 import { POSTAL_RULES } from "@/data/countries";
-import { ShippingProblem, shippingQuotes, type ShipQuote } from "@/lib/canadaPost";
+import { ShippingProblem, shippingQuotes, type ShipQuote } from "@/lib/shipping";
 import { OrderProblem, parcelGrams, priceLines, welcomePercentFor } from "@/lib/pricing";
 import { checkoutBlockers } from "@/lib/readiness";
 import { writeClient } from "@/sanity/client";
@@ -110,11 +110,11 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
 
   const subtotalCents = priced.reduce((n, l) => n + l.unitCents * l.qty, 0);
   const discountCents = Math.round((subtotalCents * percent) / 100);
-  // Shipping: the live Canada Post price for this address and parcel.
+  // Shipping: flat rate or live Canada Post price (src/lib/shipping.ts).
   let ship: ShipQuote | null = null;
   if (isShipping) {
     try {
-      const quotes = await shippingQuotes({ country: v.country, postalCode: v.postalCode }, parcelGrams(priced));
+      const quotes = await shippingQuotes({ country: v.country, postalCode: v.postalCode }, parcelGrams(priced), subtotalCents);
       ship = quotes.find((q) => q.speed === v.fulfilment) ?? null;
     } catch (e) {
       if (e instanceof ShippingProblem) return { status: "error", message: e.message };
@@ -308,7 +308,8 @@ export async function quoteShipping(input: { lines: unknown; country: string; po
   if (rule && !rule.re.test(postalCode)) return { ok: false, message: `Please add a ${rule.label.toLowerCase()}, like ${rule.example}.` };
   try {
     const priced = await priceLines(input.lines);
-    return { ok: true, quotes: await shippingQuotes({ country, postalCode }, parcelGrams(priced)) };
+    const subtotalCents = priced.reduce((n, l) => n + l.unitCents * l.qty, 0);
+    return { ok: true, quotes: await shippingQuotes({ country, postalCode }, parcelGrams(priced), subtotalCents) };
   } catch (e) {
     if (e instanceof ShippingProblem || e instanceof OrderProblem) return { ok: false, message: e.message };
     console.error("Shipping quote failed:", e);

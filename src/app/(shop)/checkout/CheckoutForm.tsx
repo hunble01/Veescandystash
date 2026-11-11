@@ -43,12 +43,18 @@ function Choice({ name, value, checked, onChange, title, detail }: { name: strin
 export function CheckoutForm({
   pickup,
   shipping,
+  shippingArea,
+  shippingCountries,
   cash,
   contactEmail,
 }: {
   pickup: string | null;
   /** Carrier name when shipping is offered (Canada Post), else null. */
   shipping: string | null;
+  /** e.g. "We ship to Canada and the USA." */
+  shippingArea: string;
+  /** Countries shipping goes to: "all", or a list of codes. */
+  shippingCountries: "all" | string[];
   cash: boolean;
   contactEmail: string | null;
 }) {
@@ -62,7 +68,7 @@ export function CheckoutForm({
   const [country, setCountry] = useState("CA");
   const [postal, setPostal] = useState("");
   const [rates, setRates] = useState<Quotes>({ state: "idle", quotes: [], message: "" });
-  const [countries] = useState(countryOptions);
+  const [countries] = useState(() => countryOptions().filter((c) => shippingCountries === "all" || shippingCountries.includes(c.code)));
   const [chosenPayment, setPayment] = useState("etransfer");
   const saved = useSavedCode();
   const [promo, setPromo] = useState({ code: "", percent: 0 });
@@ -224,7 +230,7 @@ export function CheckoutForm({
           <div role="radiogroup" aria-label="Pickup or shipping" className="grid gap-3">
             {pickup && <Choice name="fulfilment" value="pickup" checked={fulfilment === "pickup"} onChange={setFulfilment} title={`Pickup in ${pickup} · Free`} detail="Vee will email you the address and a time when it’s ready." />}
             {shipping && (
-              <Choice name="fulfilment" value="ship" checked={ship} onChange={setFulfilment} title={`Ship it with ${shipping}`} detail="Anywhere in Canada or around the world. Add your address to see Standard and Express prices." />
+              <Choice name="fulfilment" value="ship" checked={ship} onChange={setFulfilment} title={`Ship it with ${shipping}`} detail={`${shippingArea} Add your address to see the shipping price.`.trim()} />
             )}
           </div>
           {errors.fulfilment && <p className="text-sm font-semibold text-pink-deep">{errors.fulfilment}</p>}
@@ -253,7 +259,7 @@ export function CheckoutForm({
               {/* Canada Post Standard / Express with the live price */}
               <div aria-live="polite">
                 {!postalOk && rates.state !== "ok" && <p className="text-sm font-medium text-ink-soft">Add your {rule?.label.toLowerCase() ?? "postal code"} to see shipping prices.</p>}
-                {postalOk && rates.state === "loading" && <p className="text-sm font-bold text-ink-soft">Getting {shipping} prices…</p>}
+                {postalOk && rates.state === "loading" && <p className="text-sm font-bold text-ink-soft">Getting shipping prices…</p>}
                 {postalOk && rates.state === "error" && <p className="rounded-xl bg-pink-soft px-4 py-3 text-sm font-semibold text-pink-deep">{rates.message}</p>}
                 {postalOk && rates.state === "ok" && (
                   <div role="radiogroup" aria-label="Shipping speed" className="grid gap-3 sm:grid-cols-2">
@@ -264,7 +270,7 @@ export function CheckoutForm({
                         value={q.speed}
                         checked={speed === q.speed}
                         onChange={(v) => setSpeed(v as "standard" | "express")}
-                        title={`${q.speed === "express" ? "Express" : "Standard"} · ${formatPrice(q.cents)}`}
+                        title={`${q.speed === "express" ? "Express" : "Standard"} · ${q.cents === 0 ? "Free" : formatPrice(q.cents)}`}
                         detail={`${q.service}${days(q.days)}`}
                       />
                     ))}
@@ -311,7 +317,7 @@ export function CheckoutForm({
         </ul>
         <dl className="mt-4 space-y-2 border-t-[3px] border-ink pt-4">
           <div className="flex justify-between"><dt>Subtotal</dt><dd className="font-bold">{formatPrice(subtotalCents)}</dd></div>
-          <div className="flex justify-between"><dt>{ship ? "Shipping" : "Pickup"}</dt><dd className="font-bold">{ship ? (quote ? formatPrice(quote.cents) : "Add address") : "Free"}</dd></div>
+          <div className="flex justify-between"><dt>{ship ? "Shipping" : "Pickup"}</dt><dd className="font-bold">{ship ? (quote ? (quote.cents === 0 ? "Free" : formatPrice(quote.cents)) : "Add address") : "Free"}</dd></div>
           {discountCents > 0 && <div className="flex justify-between"><dt>Promo {code} ({promo.percent}% off)</dt><dd className="font-bold">−{formatPrice(discountCents)}</dd></div>}
           <div className="flex justify-between text-lg"><dt className="font-extrabold">Total</dt><dd className="font-extrabold">{formatPrice(afterDiscountCents + deliveryCents)}</dd></div>
         </dl>

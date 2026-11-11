@@ -8,7 +8,7 @@ export const faq: FaqItem[] = [
     topic: "Ordering",
     question: "How do I place an order?",
     answer:
-      "Order right here on the website: build your own stash, pick a themed bag from Occasions, or send us a custom order for any event you like. Add your treats to your cart and place your order for pickup. Having trouble? Just email us.",
+      "Order right here on the website: build your own stash, pick a themed bag from Occasions, or send us a custom order for any event you like. Add your treats to your cart and place your order for pickup or shipping. Having trouble? Just email us.",
     links: ["build", "occasions", "custom", "email"],
   },
   { topic: "Ordering", question: "What sizes do your bags come in?", answer: "Our bags come in four sizes: 0.5 lb ($15.99), 1 lb ($26.99), 2 lb ($51.99) and 4 lb ($85.00). Planning an occasion? We can make them smaller at your request, just let us know." },
@@ -20,8 +20,8 @@ export const faq: FaqItem[] = [
   },
   // Vee, 2026-11-10: pickup only, Canada Post shipping on hold (same as Sanity faq-1, faq-4, faq-5).
   { topic: "Ordering", question: "How do I pay?", answer: "We take Interac e-Transfer and cash. After you place your order, you’ll see your order number and our e-Transfer details. Send your total within 48 hours with your order number in the message, and we start packing once it arrives. Cash is for pickup orders only, paid when you pick up." },
-  { topic: "Pickup & delivery", question: "Do you offer pickup or delivery?", answer: "For now, all orders are free pickup in Vaughan, Ontario. We’ll email you the address and a time when your order is ready. Shipping with Canada Post is coming soon." },
-  { topic: "Pickup & delivery", question: "Which areas do you deliver to?", answer: "We’re not shipping just yet: for now, all orders are pickup in Vaughan, Ontario. Shipping across Canada and around the world with Canada Post is coming soon." },
+  { topic: "Pickup & delivery", question: "Do you offer pickup or delivery?", answer: "Both! Pickup in Vaughan, Ontario is free: we’ll email you the address and a time when your order is ready. Or we can ship it anywhere in Canada with Canada Post." },
+  { topic: "Pickup & delivery", question: "Which areas do you deliver to?", answer: "We ship anywhere in Canada with Canada Post: $15 within Ontario and $22 to the rest of Canada. You’ll see the shipping price at checkout before you place your order. We don’t ship outside Canada yet." },
   { topic: "Pickup & delivery", question: "How long until my order is ready?", answer: "In the GTA, orders are usually ready in about 3 business days. Custom orders for any occasion depend on the quantity, but take roughly 10 days." },
   { topic: "Custom orders", question: "How far ahead should I book an event order?", answer: "We need 10 days’ notice to place a custom order for any occasion, so we can make sure we have all your desired candy, ribbon and themes." },
   { topic: "Custom orders", question: "Is there a minimum quantity for custom favours?", answer: "Yes, the minimum for a custom order is 5 bags." },

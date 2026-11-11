@@ -62,7 +62,8 @@ export const site = {
     // Free pickup, or shipping anywhere with Canada Post (Vee, 2026-11-09:
     // replaces her own Vaughan/GTA delivery). "delivery" = Canada Post.
     // Vee, 2026-11-10: pickup only for now, Canada Post shipping on hold. Add "delivery" back to switch shipping on.
-    methods: ["pickup"] as ("pickup" | "delivery")[],
+    // Vee, 2026-11-10 (later): shipping back on with flat rates, Canada only.
+    methods: ["pickup", "delivery"] as ("pickup" | "delivery")[],
     pickupArea: "Vaughan, Ontario" as string | null,
     // Canada Post prices are looked up live for the customer's address
     // (src/lib/canadaPost.ts) from Vee's postal code in Maple. Keys and the
@@ -71,6 +72,26 @@ export const site = {
     //   CANADA_POST_ORIGIN_POSTAL_CODE, CANADA_POST_SANDBOX=1 (test keys only)
     shipping: {
       carrier: "Canada Post",
+      // How shipping is priced (Vee, 2026-11-10): "flat" = Vee's own set
+      // prices below; "canadaPost" = live Canada Post prices (needs working
+      // keys, see src/lib/canadaPost.ts). Flat for now: Canada Post's new
+      // API keeps refusing her key.
+      pricing: "flat" as "flat" | "canadaPost",
+      // Flat prices in cents, e.g. 1500 = $15.00. null = that speed isn't
+      // offered there; a region with both null isn't shipped to at all.
+      // Ontario is worked out from the postal code (K, L, M, N or P).
+      // Vee, 2026-11-10: $15 Ontario, $22 rest of Canada (Flat Rate Box
+      // $18.99 + tax), Standard only. No USA (FDA Prior Notice for food) or
+      // world (≈$55–70 per bag) for now. From Canada Post's 2026 price guide.
+      flatRates: {
+        ontario: { standard: 1500, express: null },
+        restOfCanada: { standard: 2200, express: null },
+        usa: { standard: null, express: null },
+        world: { standard: null, express: null },
+      } as Record<"ontario" | "restOfCanada" | "usa" | "world", { standard: number | null; express: number | null }>,
+      // Free Standard shipping when the bag's subtotal (before any promo
+      // code) reaches this many cents. null = never free.
+      freeStandardOverCents: null as number | null,
       // Parcel size used for the price. PLACEHOLDERS until Vee weighs and
       // measures a packed box: candy weight comes from the bag size
       // ("1 lb" etc.), plus the box and padding below.
@@ -85,7 +106,7 @@ export const site = {
       ],
     },
     // Shown under "Delivery" in the footer (Vee, 2026-11-09). null hides it.
-    footerDelivery: "Worldwide" as string | null,
+    footerDelivery: "Across Canada" as string | null,
     handlingTime: "About 3 business days in the GTA" as string | null,
   },
 
