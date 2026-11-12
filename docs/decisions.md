@@ -49,7 +49,7 @@ Last updated: 2026-10-26
 - [ ] HST registration and tax setup
 
 **Accounts to create (Phase 2)**: each one's keys go in `.env.local` (see `.env.example`)
-- [x] Sanity project `dub9zh7i` connected 2026-10-26, with read and write tokens in `.env.local`. Draft content imported (5 products, 8 occasions, 4 holiday collections, 12 FAQs).
+- [x] Sanity project `dub9zh7i` connected 2026-10-26, with read and write tokens in `.env.local`. **Replaced 2026-11-11 by `05otdw3g` (Vee’s own account, dataset private, all content copied).** Draft content imported (5 products, 8 occasions, 4 holiday collections, 12 FAQs).
   - [ ] Set the `production` dataset to **Private** (it was still public on 2026-10-26).
   - [ ] Before launch: replace both tokens with new ones (the originals were shared in chat).
   - [ ] At launch: add the live site address under API → CORS origins, with "Allow credentials" ticked.
@@ -237,3 +237,18 @@ Last updated: 2026-10-26
   - [ ] Env vars in `.env.local` and Netlify: `CANADA_POST_USERNAME`, `CANADA_POST_PASSWORD`, `CANADA_POST_ORIGIN_POSTAL_CODE` (Vee's Maple postal code; private), and `CANADA_POST_SANDBOX=1` only with test keys.
   - [ ] Vee to weigh/measure a packed box: `site.fulfilment.shipping` (`packagingGrams` 250, `defaultItemGrams` 700, three box sizes) are **placeholders**.
   - [ ] Shipping candy abroad: customs forms and food import rules vary by country; heat/melting in summer. Policies don't cover lost/delayed parcels yet.
+
+## 2026-11-11: Cheap flat shipping by weight, Canada + worldwide (local, not published)
+- Vee: "lets do a flat rate because we are new", by pounds, Canada and worldwide (chose option 2: all regions on). Canada Post Solutions for Small Business parked until the business grows.
+- Price is set by how much candy is in the order (`site.fulfilment.shipping.weightStepsLb` + `flatRates`, src/config/site.ts):
+
+  | Candy in order | Ontario | Rest of Canada | USA | Rest of world |
+  |---|---|---|---|---|
+  | Up to 1 lb | $10 | $15 | $20 | $30 |
+  | Up to 2 lb | $12 | $18 | $28 | $45 |
+  | Up to 4 lb | $15 | $22 | $40 | $65 |
+  | Over 4 lb | $18 | $26 | $50 | $80 |
+
+  The advent calendar counts as about 1.5 lb (`defaultItemGrams`). Standard only, no Express.
+- FAQ (faq.ts + Sanity drafts faq-4/faq-5 in project 05otdw3g) and Policies updated: worldwide shipping, a few weeks outside Canada, customs fees/duties/taxes paid by the customer (Vee to confirm). Footer: "Canada & worldwide".
+- OPEN, flagged to Vee: food to the USA needs an FDA Prior Notice per parcel; some countries refuse or hold food parcels (e.g. Australia, NZ); what happens if a foreign parcel is refused or lost (refund? no policy yet); international rates are below Canada Post's tracked prices, so small foreign orders may lose money.

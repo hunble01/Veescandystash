@@ -15,7 +15,15 @@ function regionFor({ country, postalCode }: ShipAddress): Region {
   return country === "US" ? "usa" : "world";
 }
 
-const offered = (r: { standard: number | null; express: number | null }) => r.standard != null || r.express != null;
+const offered = (r: number[] | null) => r != null && r.length > 0;
+
+/** Flat price for a region by candy weight: one step per weightStepsLb, then the last price. */
+function flatPrice(prices: number[], parcelGrams: number) {
+  const s = site.fulfilment.shipping;
+  const candyLb = Math.max(0, parcelGrams - s.packagingGrams) / 453.6;
+  const step = s.weightStepsLb.findIndex((lb) => candyLb <= lb + 0.01);
+  return prices[Math.min(step === -1 ? s.weightStepsLb.length : step, prices.length - 1)];
+}
 
 /** Which countries can be shipped to: "all", or a short list of codes. */
 export function shippingCountries(): "all" | string[] {
@@ -50,11 +58,9 @@ export async function shippingQuotes(to: ShipAddress, grams: number, subtotalCen
   const s = site.fulfilment.shipping;
   if (s.pricing === "canadaPost") return canadaPostQuotes(to, grams);
 
-  const rate = s.flatRates[regionFor(to)];
+  const prices = s.flatRates[regionFor(to)];
+  if (!offered(prices)) throw new ShippingProblem("Sorry, we don’t ship to that address yet. Please choose pickup, or contact us.");
   const free = s.freeStandardOverCents != null && subtotalCents >= s.freeStandardOverCents;
-  const quotes: ShipQuote[] = [];
-  if (rate.standard != null) quotes.push({ speed: "standard", service: `${s.carrier} Standard`, cents: free ? 0 : rate.standard, days: null });
-  if (rate.express != null) quotes.push({ speed: "express", service: `${s.carrier} Express`, cents: rate.express, days: null });
-  if (quotes.length === 0) throw new ShippingProblem("Sorry, we don’t ship to that address yet. Please choose pickup, or contact us.");
+  const quotes: ShipQuote[] = [{ speed: "standard", service: `${s.carrier} Standard`, cents: free ? 0 : flatPrice(prices!, grams), days: null }];
   return quotes;
 }

@@ -77,18 +77,20 @@ export const site = {
       // keys, see src/lib/canadaPost.ts). Flat for now: Canada Post's new
       // API keeps refusing her key.
       pricing: "flat" as "flat" | "canadaPost",
-      // Flat prices in cents, e.g. 1500 = $15.00. null = that speed isn't
-      // offered there; a region with both null isn't shipped to at all.
+      // Flat prices in cents (1000 = $10.00), by how much candy is in the
+      // order (Vee, 2026-11-11: cheap flat rates while we're new, shipping
+      // everywhere). Each region lists one price per step in weightStepsLb,
+      // plus a last price for anything heavier. null = not shipped there.
       // Ontario is worked out from the postal code (K, L, M, N or P).
-      // Vee, 2026-11-10: $15 Ontario, $22 rest of Canada (Flat Rate Box
-      // $18.99 + tax), Standard only. No USA (FDA Prior Notice for food) or
-      // world (≈$55–70 per bag) for now. From Canada Post's 2026 price guide.
+      // The advent calendar counts as defaultItemGrams (about 1.5 lb).
+      weightStepsLb: [1, 2, 4],
       flatRates: {
-        ontario: { standard: 1500, express: null },
-        restOfCanada: { standard: 2200, express: null },
-        usa: { standard: null, express: null },
-        world: { standard: null, express: null },
-      } as Record<"ontario" | "restOfCanada" | "usa" | "world", { standard: number | null; express: number | null }>,
+        //            ≤1 lb  ≤2 lb  ≤4 lb  over 4 lb
+        ontario:      [1000, 1200, 1500, 1800],
+        restOfCanada: [1500, 1800, 2200, 2600],
+        usa:          [2000, 2800, 4000, 5000],
+        world:        [3000, 4500, 6500, 8000],
+      } as Record<"ontario" | "restOfCanada" | "usa" | "world", number[] | null>,
       // Free Standard shipping when the bag's subtotal (before any promo
       // code) reaches this many cents. null = never free.
       freeStandardOverCents: null as number | null,
@@ -106,7 +108,7 @@ export const site = {
       ],
     },
     // Shown under "Delivery" in the footer (Vee, 2026-11-09). null hides it.
-    footerDelivery: "Across Canada" as string | null,
+    footerDelivery: "Canada & worldwide" as string | null,
     handlingTime: "About 3 business days in the GTA" as string | null,
   },
 
