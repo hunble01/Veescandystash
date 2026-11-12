@@ -257,3 +257,11 @@ Last updated: 2026-10-26
 - Vee: "we can adjust the prices on sanity too like the shipping prices". New Studio page **🍬 My shop → 🚚 Shipping prices** (singleton doc `shippingPrices`): four price boxes (up to 1 / 2 / 4 lb, over 4 lb) for Ontario, Rest of Canada, USA, Rest of the world, plus "Free shipping in Canada on orders of ($)". Leave a region's four boxes empty to stop shipping there. Edit → Publish; the site updates within a few minutes.
 - Checkout, the FAQ ("{shipping prices}" in an answer, Sanity draft faq-5) and the Policies page all read the price list from that page. `site.fulfilment.shipping.flatRates` is now only the fallback; `freeStandardOverCents` became `freeInCanadaOverCents` (free shipping applies to Canadian addresses only).
 - Seeded with the current prices. Tested locally: changing a price in the Studio changed the FAQ; removing USA removed it.
+
+## 2026-11-12: Order numbers count up from 1002 (local, not published)
+- Vee: first order number 1002, then 1003, 1004… Replaces the random `VCS-XXXXXX` codes for e-Transfer/cash orders (`src/app/(shop)/checkout/actions.ts`).
+- The last number used is kept in Sanity (`counters.orderNumber`, created at the first order with 1001). Each order adds 1 there; tested with 10 orders at the same moment: 1002–1011, no repeats. If the counter can't be reached, the order gets a random VCS- code instead so it's never lost.
+- The two orders placed before this (VCS-SC7XVQ, VCS-CRFQS2) keep their old numbers.
+
+## 2026-11-12: Phone menu
+- FAQ taken out of the phone menu (still in the footer), and the menu words start a little lower so Build Your Stash has room under the logo (Vee).

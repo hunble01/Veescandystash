@@ -54,9 +54,26 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const str = (v: unknown, max = 300) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const cad = (cents: number) => new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format(cents / 100);
 
-// Short, easy to type in an e-Transfer message: no 0/O or 1/I.
+// Order numbers count up from 1002 (Vee, 2026-11-12): 1002, 1003, 1004…
+// The last number used is kept in Sanity (counters.orderNumber); Sanity
+// applies each "+1" one at a time, so two orders never get the same number.
+// If the counter can't be reached, a random code is used so the order is
+// never lost.
+const ORDER_COUNTER_ID = "counters.orderNumber"; // dotted id: kept off the public API
+const FIRST_ORDER_NUMBER = 1002;
 const ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
-const newOrderNumber = () => `VCS-${Array.from({ length: 6 }, () => ALPHABET[randomInt(ALPHABET.length)]).join("")}`;
+const randomOrderNumber = () => `VCS-${Array.from({ length: 6 }, () => ALPHABET[randomInt(ALPHABET.length)]).join("")}`;
+async function newOrderNumber(): Promise<string> {
+  if (!writeClient) return randomOrderNumber();
+  try {
+    await writeClient.createIfNotExists({ _id: ORDER_COUNTER_ID, _type: "counter", last: FIRST_ORDER_NUMBER - 1 });
+    const counter = await writeClient.patch(ORDER_COUNTER_ID).inc({ last: 1 }).commit<{ last: number }>();
+    return String(counter.last);
+  } catch (e) {
+    console.error("Order number counter failed, using a random code:", e);
+    return randomOrderNumber();
+  }
+}
 
 export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResult> {
   if (site.payments.mode !== "manual" || checkoutBlockers().length) return { status: "error", message: "Online ordering isn’t open yet." };
@@ -130,7 +147,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
   const paymentText = payment === "cash" ? "Cash at pickup" : `e-Transfer to ${site.payments.eTransferEmail}`;
 
   // Save to Vee's inbox. Retry once on the (very unlikely) chance the number is taken.
-  let orderNumber = newOrderNumber();
+  let orderNumber = await newOrderNumber();
   const doc = () => ({
     _id: `orders.manual-${orderNumber}`, // dotted id: kept off Sanity's public API
     _type: "order",
@@ -169,7 +186,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
       await writeClient.create(doc());
       saved = true;
     } catch {
-      orderNumber = newOrderNumber();
+      orderNumber = await newOrderNumber();
       try {
         await writeClient.create(doc());
         saved = true;

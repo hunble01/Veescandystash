@@ -18,7 +18,8 @@ function useAnnouncement() {
   return over && after ? { text: after.text, href: after.href } : { text: site.announcement, href: site.announcementHref };
 }
 
-const mobileNav = [...nav, { href: "/faq", label: "FAQ" }, { href: "/contact", label: "Contact" }];
+// FAQ lives in the footer only (Vee, 2026-11-12).
+const mobileNav = [...nav, { href: "/contact", label: "Contact" }];
 
 // The page address is only known at request time on catch-all routes such as
 // /sign-in/[[...sign-in]], so ShopShell wraps <Header> in <Suspense> and shows
@@ -135,11 +136,12 @@ function HeaderView({ pathname }: { pathname: string }) {
         </div>
       </div>
 
+      {/* Menu words start a little lower so Build Your Stash isn't so close to the top (Vee, 2026-11-12; was pt-36). */}
       {open && (
         <nav
           id="mobile-menu"
           aria-label="Main"
-          className="fixed inset-0 -z-10 overflow-y-auto pt-36 lg:hidden"
+          className="fixed inset-0 -z-10 overflow-y-auto pt-48 lg:hidden"
           style={{ backgroundColor: "#f6a26a", backgroundImage: "repeating-conic-gradient(from 0deg at 50% 110%, #fde0cb55 0deg 8deg, transparent 8deg 16deg)" }}
         >
           <ul className="flex flex-col gap-1 px-6 pb-16">
