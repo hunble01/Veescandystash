@@ -38,6 +38,9 @@ export const structure: StructureResolver = (S) => {
       S.documentTypeListItem("candyOption").title("🍭 Candies (in stock?)"),
       S.documentTypeListItem("occasion").title("🎈 Occasions"),
       S.documentTypeListItem("seasonalCollection").title("🎃 Holiday collections"),
+      S.listItem()
+        .title("🚚 Shipping prices")
+        .child(S.document().schemaType("shippingPrices").documentId("shippingPrices").title("Shipping prices")),
       S.documentTypeListItem("faqItem").title("❓ FAQ"),
     ]);
 };

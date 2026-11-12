@@ -252,3 +252,8 @@ Last updated: 2026-10-26
   The advent calendar counts as about 1.5 lb (`defaultItemGrams`). Standard only, no Express.
 - FAQ (faq.ts + Sanity drafts faq-4/faq-5 in project 05otdw3g) and Policies updated: worldwide shipping, a few weeks outside Canada, customs fees/duties/taxes paid by the customer (Vee to confirm). Footer: "Canada & worldwide".
 - OPEN, flagged to Vee: food to the USA needs an FDA Prior Notice per parcel; some countries refuse or hold food parcels (e.g. Australia, NZ); what happens if a foreign parcel is refused or lost (refund? no policy yet); international rates are below Canada Post's tracked prices, so small foreign orders may lose money.
+
+## 2026-11-11: Shipping prices editable in the Studio (local, not published)
+- Vee: "we can adjust the prices on sanity too like the shipping prices". New Studio page **🍬 My shop → 🚚 Shipping prices** (singleton doc `shippingPrices`): four price boxes (up to 1 / 2 / 4 lb, over 4 lb) for Ontario, Rest of Canada, USA, Rest of the world, plus "Free shipping in Canada on orders of ($)". Leave a region's four boxes empty to stop shipping there. Edit → Publish; the site updates within a few minutes.
+- Checkout, the FAQ ("{shipping prices}" in an answer, Sanity draft faq-5) and the Policies page all read the price list from that page. `site.fulfilment.shipping.flatRates` is now only the fallback; `freeStandardOverCents` became `freeInCanadaOverCents` (free shipping applies to Canadian addresses only).
+- Seeded with the current prices. Tested locally: changing a price in the Studio changed the FAQ; removing USA removed it.

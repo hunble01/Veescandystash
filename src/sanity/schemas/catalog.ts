@@ -238,3 +238,49 @@ export const faqItem = defineType({
     defineField({ name: "sortOrder", title: "Sort order", type: "number" }),
   ],
 });
+
+// Shipping prices Vee can change herself (Vee, 2026-11-11). One page in the
+// Studio (document id "shippingPrices"). The website falls back to
+// site.fulfilment.shipping.flatRates when this page is empty.
+const tierFields = [
+  { name: "upTo1lb", title: "Up to 1 lb of candy" },
+  { name: "upTo2lb", title: "Up to 2 lb of candy" },
+  { name: "upTo4lb", title: "Up to 4 lb of candy" },
+  { name: "over4lb", title: "Over 4 lb of candy" },
+] as const;
+
+const region = (name: string, title: string) =>
+  defineField({
+    name,
+    title,
+    type: "object",
+    description: "Price in dollars, e.g. 12.50. Leave all four empty to stop shipping there.",
+    options: { columns: 2 },
+    fields: tierFields.map((t) => defineField({ name: t.name, title: t.title, type: "number", validation: (r) => r.min(0) })),
+    validation: (r) =>
+      r.custom((v: Record<string, number | undefined> | undefined) => {
+        const filled = tierFields.filter((t) => v?.[t.name] != null).length;
+        return filled === 0 || filled === tierFields.length ? true : "Fill in all four prices, or leave all four empty to stop shipping here.";
+      }),
+  });
+
+export const shippingPrices = defineType({
+  name: "shippingPrices",
+  title: "Shipping prices",
+  type: "document",
+  description: "What customers pay for shipping. The price depends on where it's going and how much candy is in the order (the Advent Calendar counts as about 1½ lb). Pickup is always free.",
+  fields: [
+    region("ontario", "Ontario"),
+    region("restOfCanada", "Rest of Canada"),
+    region("usa", "USA"),
+    region("world", "Rest of the world"),
+    defineField({
+      name: "freeInCanadaOver",
+      title: "Free shipping in Canada on orders of ($)",
+      description: "e.g. 75 = free shipping in Canada on orders of $75 or more. Leave empty for no free shipping.",
+      type: "number",
+      validation: (r) => r.min(0),
+    }),
+  ],
+  preview: { prepare: () => ({ title: "Shipping prices" }) },
+});

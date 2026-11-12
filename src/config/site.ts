@@ -77,6 +77,7 @@ export const site = {
       // keys, see src/lib/canadaPost.ts). Flat for now: Canada Post's new
       // API keeps refusing her key.
       pricing: "flat" as "flat" | "canadaPost",
+      // FALLBACK ONLY: Vee edits these in the Studio (🚚 Shipping prices).
       // Flat prices in cents (1000 = $10.00), by how much candy is in the
       // order (Vee, 2026-11-11: cheap flat rates while we're new, shipping
       // everywhere). Each region lists one price per step in weightStepsLb,
@@ -91,9 +92,9 @@ export const site = {
         usa:          [2000, 2800, 4000, 5000],
         world:        [3000, 4500, 6500, 8000],
       } as Record<"ontario" | "restOfCanada" | "usa" | "world", number[] | null>,
-      // Free Standard shipping when the bag's subtotal (before any promo
-      // code) reaches this many cents. null = never free.
-      freeStandardOverCents: null as number | null,
+      // Free shipping within Canada when the bag's subtotal (before any promo
+      // code) reaches this many cents. null = never free. Fallback, like above.
+      freeInCanadaOverCents: null as number | null,
       // Parcel size used for the price. PLACEHOLDERS until Vee weighs and
       // measures a packed box: candy weight comes from the bag size
       // ("1 lb" etc.), plus the box and padding below.

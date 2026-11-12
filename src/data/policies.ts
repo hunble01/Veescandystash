@@ -28,7 +28,7 @@ export const policies: PolicySection[] = [
       // Canada Post shipping (Vee, 2026-11-09), priced live at checkout.
       site.fulfilment.methods.includes("delivery")
         ? site.fulfilment.shipping.pricing === "flat"
-          ? `Shipping: we ship anywhere in Canada and around the world with ${site.fulfilment.shipping.carrier} at a flat price based on your area and how much candy is in your order, shown at checkout before you place your order. Orders outside Canada may take a few weeks to arrive, and any customs fees, duties or taxes charged by your country are paid by you.${site.fulfilment.shipping.freeStandardOverCents != null ? ` Standard shipping is free on orders of $${(site.fulfilment.shipping.freeStandardOverCents / 100).toFixed(2)} or more.` : ""}`
+          ? `Shipping: we ship anywhere in Canada and around the world with ${site.fulfilment.shipping.carrier} at a flat price based on your area and how much candy is in your order, shown at checkout before you place your order. {shipping prices} Orders outside Canada may take a few weeks to arrive, and any customs fees, duties or taxes charged by your country are paid by you.`
           : `Shipping: we ship across Canada and around the world with ${site.fulfilment.shipping.carrier}. Choose Standard or Express at checkout, and the shipping price for your address is added automatically.`
         : `Shipping: coming soon with ${site.fulfilment.shipping.carrier}. For now, all orders are free pickup in ${site.fulfilment.pickupArea ?? "Vaughan"}.`,
     ],

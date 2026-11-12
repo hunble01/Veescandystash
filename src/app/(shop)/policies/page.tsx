@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ButtonLink, Container, PageHeader } from "@/components/ui";
 import { site } from "@/config/site";
 import { policies } from "@/data/policies";
+import { getShippingRates } from "@/lib/catalog";
+import { withShippingPrices } from "@/lib/shippingRates";
 
 export const metadata: Metadata = {
   title: "Policies & Conditions",
@@ -28,7 +30,9 @@ function withEmail(point: string) {
   );
 }
 
-export default function PoliciesPage() {
+export default async function PoliciesPage() {
+  // "{shipping prices}" in a point shows the Studio's shipping price list.
+  const rates = await getShippingRates();
   return (
     <>
       <PageHeader eyebrow="Policies & Conditions" title="The sweet print." intro="How orders, refunds, your candy and your privacy are handled." />
@@ -43,7 +47,7 @@ export default function PoliciesPage() {
             )}
             {section.points.length ? (
               <ul className="list-disc space-y-3 pl-5 text-ink-soft">
-                {section.points.map((point) => <li key={point}>{withEmail(point)}</li>)}
+                {section.points.map((point) => <li key={point}>{withEmail(withShippingPrices(point, rates))}</li>)}
               </ul>
             ) : (
               <p className="text-ink-soft">Coming soon.</p>

@@ -7,6 +7,7 @@ import { products as localProducts } from "@/data/products";
 import { readClient } from "@/sanity/client";
 import { site } from "@/config/site";
 import type { CandyOption, FaqItem, Occasion, Product, SeasonalCollection } from "./types";
+import { fallbackShippingRates, REGIONS, withShippingPrices, type ShippingRates } from "./shippingRates";
 
 // One place pages get catalogue content from. Reads Sanity when it's
 // connected, otherwise the draft data files in src/data/. Cached for a few
@@ -96,8 +97,31 @@ export async function getSeasonalCollection(slug: string) {
 export async function getFaq(): Promise<FaqItem[]> {
   "use cache";
   cacheLife("minutes");
-  if (!readClient) return localFaq;
-  return readClient.fetch<FaqItem[]>(FAQ);
+  const [items, rates] = await Promise.all([readClient ? readClient.fetch<FaqItem[]>(FAQ) : localFaq, getShippingRates()]);
+  // "{shipping prices}" in an answer shows the current shipping price list.
+  return items.map((f) => (f.answer ? { ...f, answer: withShippingPrices(f.answer, rates) } : f));
+}
+
+type SanityShipping = Partial<Record<(typeof REGIONS)[number], Record<"upTo1lb" | "upTo2lb" | "upTo4lb" | "over4lb", number | null> | null>> & {
+  freeInCanadaOver?: number | null;
+};
+
+/** Shipping prices from the Studio (🚚 Shipping prices), or the fallback in site.ts. */
+export async function getShippingRates(): Promise<ShippingRates> {
+  "use cache";
+  cacheLife("minutes");
+  if (!readClient) return fallbackShippingRates;
+  const doc = await readClient.fetch<SanityShipping | null>(`*[_id == "shippingPrices"][0]`);
+  if (!doc) return fallbackShippingRates;
+  const flatRates = Object.fromEntries(
+    REGIONS.map((r) => {
+      const t = doc[r];
+      const list = t ? [t.upTo1lb, t.upTo2lb, t.upTo4lb, t.over4lb] : [];
+      // A region counts only when all four prices are filled in.
+      return [r, list.length && list.every((v) => v != null) ? list.map((v) => toCents(v)!) : null];
+    }),
+  ) as ShippingRates["flatRates"];
+  return { flatRates, freeInCanadaOverCents: toCents(doc.freeInCanadaOver) };
 }
 
 export async function getCandies(): Promise<CandyOption[]> {

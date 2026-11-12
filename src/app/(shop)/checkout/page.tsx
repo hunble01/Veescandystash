@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Place your order", robots: { index: 
 
 // e-Transfer / cash checkout (Vee, 2026-11-08). With Stripe switched on, the
 // cart goes straight to Stripe instead and this page isn't used.
-export default function CheckoutPage() {
+export default async function CheckoutPage() {
   if (site.payments.mode !== "manual" || checkoutBlockers().length) redirect("/cart");
   const f = site.fulfilment;
   return (
@@ -20,9 +20,9 @@ export default function CheckoutPage() {
         <CheckoutForm
           pickup={f.methods.includes("pickup") ? f.pickupArea ?? "Vaughan" : null}
           // Shipping shows once "delivery" is on and flat prices (or Canada Post keys) are set.
-          shipping={f.methods.includes("delivery") && shippingReady() ? f.shipping.carrier : null}
-          shippingArea={shippingAreaText()}
-          shippingCountries={shippingCountries()}
+          shipping={f.methods.includes("delivery") && (await shippingReady()) ? f.shipping.carrier : null}
+          shippingArea={await shippingAreaText()}
+          shippingCountries={await shippingCountries()}
           cash={site.payments.cash}
           contactEmail={site.contact.email}
         />
