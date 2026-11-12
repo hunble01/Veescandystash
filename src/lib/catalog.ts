@@ -104,6 +104,7 @@ export async function getFaq(): Promise<FaqItem[]> {
 
 type SanityShipping = Partial<Record<(typeof REGIONS)[number], Record<"upTo1lb" | "upTo2lb" | "upTo4lb" | "over4lb", number | null> | null>> & {
   freeInCanadaOver?: number | null;
+  expressPickupFee?: number | null;
 };
 
 /** Shipping prices from the Studio (🚚 Shipping prices), or the fallback in site.ts. */
@@ -121,7 +122,7 @@ export async function getShippingRates(): Promise<ShippingRates> {
       return [r, list.length && list.every((v) => v != null) ? list.map((v) => toCents(v)!) : null];
     }),
   ) as ShippingRates["flatRates"];
-  return { flatRates, freeInCanadaOverCents: toCents(doc.freeInCanadaOver) };
+  return { flatRates, freeInCanadaOverCents: toCents(doc.freeInCanadaOver), expressPickupCents: toCents(doc.expressPickupFee) };
 }
 
 export async function getCandies(): Promise<CandyOption[]> {

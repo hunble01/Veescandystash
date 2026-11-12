@@ -65,6 +65,11 @@ export const site = {
     // Vee, 2026-11-10 (later): shipping back on with flat rates, Canada only.
     methods: ["pickup", "delivery"] as ("pickup" | "delivery")[],
     pickupArea: "Vaughan, Ontario" as string | null,
+    // Pickup speeds (Vee, 2026-11-12): regular pickup is free; Express pickup
+    // costs extra (Studio → 🚚 Shipping prices → Express pickup fee; this is
+    // the fallback, null = no Express option).
+    pickupDays: { regular: "3–5 days", express: "1–2 days" },
+    expressPickupFeeCents: null as number | null, // Vee, 2026-11-12: Express off for now, regular pickup only
     // Canada Post prices are looked up live for the customer's address
     // (src/lib/canadaPost.ts) from Vee's postal code in Maple. Keys and the
     // postal code live in .env.local / Netlify, never here:
@@ -110,7 +115,7 @@ export const site = {
     },
     // Shown under "Delivery" in the footer (Vee, 2026-11-09). null hides it.
     footerDelivery: "Canada & worldwide" as string | null,
-    handlingTime: "About 3 business days in the GTA" as string | null,
+    handlingTime: "Pickup orders are ready in 3–5 days" as string | null,
   },
 
   // How customers pay (Vee, 2026-11-08). "manual" = e-Transfer or cash: the

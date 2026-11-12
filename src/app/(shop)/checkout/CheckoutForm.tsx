@@ -45,6 +45,8 @@ export function CheckoutForm({
   shipping,
   shippingArea,
   shippingCountries,
+  expressPickupCents,
+  pickupDays,
   cash,
   contactEmail,
 }: {
@@ -55,6 +57,9 @@ export function CheckoutForm({
   shippingArea: string;
   /** Countries shipping goes to: "all", or a list of codes. */
   shippingCountries: "all" | string[];
+  /** Extra charge for Express pickup; null = only regular pickup. */
+  expressPickupCents: number | null;
+  pickupDays: { regular: string; express: string };
   cash: boolean;
   contactEmail: string | null;
 }) {
@@ -62,7 +67,8 @@ export function CheckoutForm({
   const { isSignedIn } = useAuth();
   const formRef = useRef<HTMLFormElement>(null);
   const defaults = useRef<Awaited<ReturnType<typeof myCheckoutDefaults>>>(null);
-  // "pickup" or "ship"; when shipping, the customer then picks Standard or Express.
+  // "pickup" (regular, free), "pickup_express" (Vee, 2026-11-12) or "ship";
+  // when shipping, the customer then picks Standard or Express.
   const [fulfilment, setFulfilment] = useState(pickup ? "pickup" : shipping ? "ship" : "");
   const [speed, setSpeed] = useState<"standard" | "express">("standard");
   const [country, setCountry] = useState("CA");
@@ -132,13 +138,15 @@ export function CheckoutForm({
   }, [ship, country, postal, postalOk, cartKey]);
   const quote = ship && rates.state === "ok" ? rates.quotes.find((q) => q.speed === speed) ?? null : null;
 
-  const cashOk = cash && fulfilment === "pickup";
+  const isPickup = fulfilment === "pickup" || fulfilment === "pickup_express";
+  const expressPickup = fulfilment === "pickup_express" && expressPickupCents != null;
+  const cashOk = cash && isPickup;
   const payment = cashOk ? chosenPayment : "etransfer";
 
   // Estimate only: the server works out the real total (and checks the code).
   const discountCents = Math.round((subtotalCents * promo.percent) / 100);
   const afterDiscountCents = subtotalCents - discountCents;
-  const deliveryCents = quote?.cents ?? 0;
+  const deliveryCents = ship ? quote?.cents ?? 0 : expressPickup ? expressPickupCents! : 0;
 
   function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -228,7 +236,26 @@ export function CheckoutForm({
         <section className={`space-y-4 ${panel}`}>
           <h2 className="text-3xl">2. Pickup or shipping</h2>
           <div role="radiogroup" aria-label="Pickup or shipping" className="grid gap-3">
-            {pickup && <Choice name="fulfilment" value="pickup" checked={fulfilment === "pickup"} onChange={setFulfilment} title={`Pickup in ${pickup} · Free`} detail="Vee will email you the address and a time when it’s ready." />}
+            {pickup && (
+              <Choice
+                name="fulfilment"
+                value="pickup"
+                checked={fulfilment === "pickup"}
+                onChange={setFulfilment}
+                title={`${expressPickupCents != null ? "Regular pickup" : "Pickup"} in ${pickup} · Free`}
+                detail={`Ready in ${pickupDays.regular}. We’ll email you the address and a time when it’s ready.`}
+              />
+            )}
+            {pickup && expressPickupCents != null && (
+              <Choice
+                name="fulfilment"
+                value="pickup_express"
+                checked={fulfilment === "pickup_express"}
+                onChange={setFulfilment}
+                title={`⚡ Express pickup · +${formatPrice(expressPickupCents)}`}
+                detail={`Ready in ${pickupDays.express}. We’ll email you the address and a time when it’s ready.`}
+              />
+            )}
             {shipping && (
               <Choice name="fulfilment" value="ship" checked={ship} onChange={setFulfilment} title={`Ship it with ${shipping}`} detail={`${shippingArea} Add your address to see the shipping price.`.trim()} />
             )}
@@ -317,7 +344,7 @@ export function CheckoutForm({
         </ul>
         <dl className="mt-4 space-y-2 border-t-[3px] border-ink pt-4">
           <div className="flex justify-between"><dt>Subtotal</dt><dd className="font-bold">{formatPrice(subtotalCents)}</dd></div>
-          <div className="flex justify-between"><dt>{ship ? "Shipping" : "Pickup"}</dt><dd className="font-bold">{ship ? (quote ? (quote.cents === 0 ? "Free" : formatPrice(quote.cents)) : "Add address") : "Free"}</dd></div>
+          <div className="flex justify-between"><dt>{ship ? "Shipping" : expressPickup ? "Express pickup" : "Pickup"}</dt><dd className="font-bold">{ship ? (quote ? (quote.cents === 0 ? "Free" : formatPrice(quote.cents)) : "Add address") : expressPickup ? formatPrice(expressPickupCents!) : "Free"}</dd></div>
           {discountCents > 0 && <div className="flex justify-between"><dt>Promo {code} ({promo.percent}% off)</dt><dd className="font-bold">−{formatPrice(discountCents)}</dd></div>}
           <div className="flex justify-between text-lg"><dt className="font-extrabold">Total</dt><dd className="font-extrabold">{formatPrice(afterDiscountCents + deliveryCents)}</dd></div>
         </dl>
@@ -372,8 +399,8 @@ function Placed({ order, pickup, contactEmail }: { order: PlacedOrder; pickup: s
         <p className="font-medium text-ink-soft">
           {order.payment === "etransfer" ? "We start packing as soon as your payment arrives. " : ""}
           {order.fulfilment === "pickup"
-            ? `Pickup is in ${pickup ?? "Vaughan"}: Vee will email you the address and a time when your order is ready.`
-            : "Vee will email you your tracking number when your order ships."}
+            ? `Pickup is in ${pickup ?? "Vaughan"}. You’ll be notified by email when your order is ready for pickup, with the address and a time.`
+            : "You’ll be notified by email when your order has shipped, with your tracking number."}
         </p>
       </div>
 
@@ -381,7 +408,7 @@ function Placed({ order, pickup, contactEmail }: { order: PlacedOrder; pickup: s
         <dl className="space-y-1">
           <div className="flex justify-between"><dt>Subtotal</dt><dd className="font-bold">{formatPrice(order.subtotalCents)}</dd></div>
           {order.discountCents > 0 && <div className="flex justify-between"><dt>Discount</dt><dd className="font-bold">−{formatPrice(order.discountCents)}</dd></div>}
-          <div className="flex justify-between"><dt>{order.fulfilment === "delivery" ? "Shipping" : "Pickup"}</dt><dd className="font-bold">{order.deliveryCents ? formatPrice(order.deliveryCents) : "Free"}</dd></div>
+          <div className="flex justify-between"><dt>{order.fulfilment === "delivery" ? "Shipping" : order.expressPickup ? "Express pickup" : "Pickup"}</dt><dd className="font-bold">{order.deliveryCents ? formatPrice(order.deliveryCents) : "Free"}</dd></div>
           <div className="flex justify-between text-lg"><dt className="font-extrabold">Total</dt><dd className="font-extrabold">{total}</dd></div>
         </dl>
         <p className="pt-2 text-sm font-medium text-ink-soft">

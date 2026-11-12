@@ -6,6 +6,8 @@ import { getAddresses, getCustomer } from "@/lib/account";
 import { escapeHtml, notifyOwner, sendOrderInstructions } from "@/lib/notify";
 import { POSTAL_RULES } from "@/data/countries";
 import { ShippingProblem, shippingQuotes, type ShipQuote } from "@/lib/shipping";
+import { getShippingRates } from "@/lib/catalog";
+import { receiptTotals } from "@/lib/receipt";
 import { OrderProblem, parcelGrams, priceLines, welcomePercentFor } from "@/lib/pricing";
 import { checkoutBlockers } from "@/lib/readiness";
 import { writeClient } from "@/sanity/client";
@@ -21,7 +23,7 @@ export type PlaceOrderInput = {
   name: string;
   email: string;
   phone: string;
-  fulfilment: string; // "pickup", or Canada Post "standard" / "express"
+  fulfilment: string; // "pickup", "pickup_express", or Canada Post "standard" / "express"
   street?: string;
   city?: string;
   province?: string;
@@ -40,6 +42,7 @@ export type PlacedOrder = {
   totalCents: number;
   payment: "etransfer" | "cash";
   fulfilment: "pickup" | "delivery";
+  expressPickup: boolean;
   eTransferEmail: string | null;
   payWithinHours: number | null;
   emailed: boolean;
@@ -94,7 +97,8 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
     code: str(input.code, 40),
   };
 
-  const isPickup = v.fulfilment === "pickup";
+  const expressPickup = v.fulfilment === "pickup_express";
+  const isPickup = v.fulfilment === "pickup" || expressPickup;
   const isShipping = v.fulfilment === "standard" || v.fulfilment === "express";
   const errors: Record<string, string> = {};
   if (!v.name) errors.name = "Please add your name.";
@@ -139,11 +143,21 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
     }
     if (!ship) return { status: "invalid", errors: { fulfilment: "That shipping option isn’t available for this address. Please choose another." } };
   }
-  const deliveryCents = ship?.cents ?? 0;
+  // Express pickup (Vee, 2026-11-12): fee from the Studio, checked here so
+  // the browser can't change it.
+  let expressPickupCents = 0;
+  if (expressPickup) {
+    const fee = (await getShippingRates()).expressPickupCents;
+    if (fee == null) return { status: "invalid", errors: { fulfilment: "Express pickup isn’t available right now. Please choose regular pickup." } };
+    expressPickupCents = fee;
+  }
+  const deliveryCents = ship?.cents ?? expressPickupCents;
   const totalCents = subtotalCents - discountCents + deliveryCents;
   const payment = v.payment as "etransfer" | "cash";
   const address = isShipping ? formatAddress(v) : "";
-  const fulfilmentText = isPickup ? `Pickup in ${site.fulfilment.pickupArea ?? "Vaughan"}` : `Shipping: ${ship!.service}`;
+  const days = site.fulfilment.pickupDays;
+  const pickupOption = expressPickup ? `⚡ EXPRESS pickup (ready in ${days.express})` : `Regular pickup (ready in ${days.regular})`;
+  const fulfilmentText = isPickup ? `${pickupOption}, ${site.fulfilment.pickupArea ?? "Vaughan"}` : `Shipping: ${ship!.service}`;
   const paymentText = payment === "cash" ? "Cash at pickup" : `e-Transfer to ${site.payments.eTransferEmail}`;
 
   // Save to Vee's inbox. Retry once on the (very unlikely) chance the number is taken.
@@ -157,7 +171,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
     customer: { name: v.name, email: v.email, phone: v.phone },
     customerUserId: customer?.id ?? "",
     fulfilment: isPickup ? "pickup" : "delivery",
-    deliveryZone: ship?.service ?? "",
+    deliveryZone: ship?.service ?? pickupOption,
     shippingAddress: address,
     paymentMethod: payment,
     customerNotes: v.notes,
@@ -198,7 +212,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
 
   const itemLines = priced.map((l) => `${l.qty} × ${l.name} (${cad(l.unitCents * l.qty)})`);
   const ownerEmailed = await notifyOwner(
-    `🛍️ New order ${orderNumber}: ${cad(totalCents)} from ${v.name} (${payment === "cash" ? "cash" : "e-Transfer"}, waiting for payment)`,
+    `🛍️ ${expressPickup ? "⚡ EXPRESS " : ""}New order ${orderNumber}: ${cad(totalCents)} from ${v.name} (${payment === "cash" ? "cash" : "e-Transfer"}, waiting for payment)`,
     [
       ["Order", orderNumber],
       ["Payment", `${paymentText}: NOT PAID YET. Check your bank before packing.`],
@@ -211,6 +225,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
       ["Subtotal", cad(subtotalCents)],
       ["Discount", discountCents ? `−${cad(discountCents)} (${v.code.toUpperCase()})` : ""],
       ["Shipping", ship ? cad(deliveryCents) : ""],
+      ["Express pickup fee", expressPickup ? cad(deliveryCents) : ""],
       ["Total to collect", cad(totalCents)],
       ["Customer notes", v.notes],
     ],
@@ -234,8 +249,9 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
     items: itemLines,
     paymentHtml,
     fulfilment: isPickup
-      ? `Pickup in ${site.fulfilment.pickupArea ?? "Vaughan"}. Vee will email you the address and time when it’s ready.`
-      : `Shipping with ${ship!.service} to: ${address.replace(/\n/g, ", ")}.`,
+      ? `${expressPickup ? "Express pickup" : "Pickup"} in ${site.fulfilment.pickupArea ?? "Vaughan"}, ready in ${expressPickup ? days.express : days.regular}. You’ll be notified by email when your order is ready for pickup, with the address and a time.`
+      : `Shipping with ${ship!.service} to: ${address.replace(/\n/g, ", ")}. You’ll be notified by email when your order has shipped.`,
+    totals: receiptTotals({ subtotalCents, discountCents, code: percent ? v.code.toUpperCase() : "", deliveryCents, deliveryLabel: ship ? "Shipping" : expressPickup ? "Express pickup" : "Pickup", totalCents }),
   }).catch(() => false);
 
   return {
@@ -248,6 +264,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
       totalCents,
       payment,
       fulfilment: isPickup ? "pickup" : "delivery",
+      expressPickup,
       eTransferEmail: etEmail,
       payWithinHours: site.payments.payWithinHours,
       emailed,

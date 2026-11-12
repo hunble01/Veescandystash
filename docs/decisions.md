@@ -265,3 +265,8 @@ Last updated: 2026-10-26
 
 ## 2026-11-12: Phone menu
 - FAQ taken out of the phone menu (still in the footer), and the menu words start a little lower so Build Your Stash has room under the logo (Vee).
+
+## 2026-11-12: Receipt in the order email, regular pickup 3–5 days (local, not published)
+- **Order email is now a full receipt:** items, then Subtotal, Discount (code), Pickup / Shipping, Total. It ends with "You'll be notified by email when your order is ready for pickup, with the address and a time" (or "has shipped").
+- **Payment received:** Vee emails customers herself (payment received, pickup address, and that a pickup date/time email follows). An automatic payment-receipt email was built, then removed at her request.
+- **Pickup:** regular pickup only, free, "ready in 3–5 days" (`site.fulfilment.pickupDays`). Express pickup (+$3, 1–2 days) is built but OFF: Studio → 🚚 Shipping prices → "Express pickup fee" is empty. Typing a fee there switches it on (shows "⚡ EXPRESS" on those orders). FAQ (Sanity draft faq-6) and Policies use "{pickup options}".

@@ -13,11 +13,14 @@ export interface ShippingRates {
   flatRates: Record<Region, number[] | null>;
   /** Free shipping within Canada when the subtotal reaches this. null = never. */
   freeInCanadaOverCents: number | null;
+  /** Extra charge for Express pickup. null = Express pickup not offered. */
+  expressPickupCents: number | null;
 }
 
 export const fallbackShippingRates: ShippingRates = {
   flatRates: site.fulfilment.shipping.flatRates,
   freeInCanadaOverCents: site.fulfilment.shipping.freeInCanadaOverCents,
+  expressPickupCents: site.fulfilment.expressPickupFeeCents,
 };
 
 const money = (cents: number) => `$${cents % 100 === 0 ? cents / 100 : (cents / 100).toFixed(2)}`;
@@ -41,6 +44,14 @@ export function shippingPriceText(rates: ShippingRates): string {
   return parts.join(" ") + free;
 }
 
-/** Swaps "{shipping prices}" in a piece of text for the current price list. */
+/** e.g. "Regular pickup is free and ready in 3–5 days, or choose Express pickup ($3) and it's ready in 1–2 days." */
+export function pickupOptionsText(rates: ShippingRates): string {
+  const d = site.fulfilment.pickupDays;
+  return rates.expressPickupCents != null
+    ? `Regular pickup is free and ready in ${d.regular}, or choose Express pickup (${money(rates.expressPickupCents)}) and it’s ready in ${d.express}.`
+    : `Pickup is free and ready in ${d.regular}.`;
+}
+
+/** Swaps "{shipping prices}" and "{pickup options}" in a piece of text for the current prices. */
 export const withShippingPrices = (text: string, rates: ShippingRates) =>
-  text.includes("{shipping prices}") ? text.replaceAll("{shipping prices}", shippingPriceText(rates)) : text;
+  text.replaceAll("{shipping prices}", () => shippingPriceText(rates)).replaceAll("{pickup options}", () => pickupOptionsText(rates));

@@ -24,7 +24,7 @@ export const policies: PolicySection[] = [
       ...(site.payments.payWithinHours
         ? [`Please send your e-Transfer within ${site.payments.payWithinHours} hours of placing your order. If it hasn’t arrived by then, your order will be cancelled.`]
         : []),
-      `Pickup in ${site.fulfilment.pickupArea ?? "Vaughan"} is free. We’ll email you the address and a time when your order is ready.`,
+      `Pickup is in ${site.fulfilment.pickupArea ?? "Vaughan"}. {pickup options} We’ll email you the address and a time when your order is ready.`,
       // Canada Post shipping (Vee, 2026-11-09), priced live at checkout.
       site.fulfilment.methods.includes("delivery")
         ? site.fulfilment.shipping.pricing === "flat"

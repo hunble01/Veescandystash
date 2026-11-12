@@ -54,7 +54,7 @@ export const order = defineType({
       hidden: ({ value }) => !value,
     }),
     defineField({ name: "fulfilment", title: "Pickup or delivery", type: "string", readOnly: true }),
-    defineField({ name: "deliveryZone", title: "Delivery area", type: "string", readOnly: true, hidden: ({ value }) => !value }),
+    defineField({ name: "deliveryZone", title: "Pickup / shipping option", type: "string", readOnly: true, hidden: ({ value }) => !value }),
     defineField({ name: "shippingAddress", title: "Delivery address", type: "text", rows: 3, readOnly: true }),
     defineField({ name: "customerNotes", title: "Customer’s notes", type: "text", rows: 3, readOnly: true, hidden: ({ value }) => !value }),
     defineField({
@@ -85,16 +85,17 @@ export const order = defineType({
     defineField({ name: "subtotal", title: "Subtotal ($)", type: "number", readOnly: true }),
     defineField({ name: "discount", title: "Discount ($)", type: "number", readOnly: true, hidden: ({ value }) => !value }),
     defineField({ name: "discountCode", title: "Discount code", type: "string", readOnly: true, hidden: ({ value }) => !value }),
-    defineField({ name: "deliveryFee", title: "Delivery fee ($)", type: "number", readOnly: true, hidden: ({ value }) => value == null }),
+    defineField({ name: "deliveryFee", title: "Shipping / Express pickup fee ($)", type: "number", readOnly: true, hidden: ({ value }) => value == null }),
     defineField({ name: "tax", title: "Tax ($)", type: "number", readOnly: true }),
     defineField({ name: "total", title: "Total ($)", type: "number", readOnly: true }),
     defineField({ name: "stripeSessionId", title: "Stripe reference", type: "string", readOnly: true, hidden: ({ value }) => !value }),
   ],
   orderings: [{ title: "Newest first", name: "newest", by: [{ field: "createdAt", direction: "desc" }] }],
   preview: {
-    select: { name: "customer.name", total: "total", status: "status", createdAt: "createdAt", number: "orderNumber", pay: "paymentMethod", how: "fulfilment" },
-    prepare: ({ name, total, status, createdAt, number, pay, how }) => ({
-      title: `${statusEmoji(status)} ${name ?? "Customer"} · $${Number(total ?? 0).toFixed(2)}`,
+    select: { name: "customer.name", total: "total", status: "status", createdAt: "createdAt", number: "orderNumber", pay: "paymentMethod", how: "fulfilment", zone: "deliveryZone" },
+    prepare: ({ name, total, status, createdAt, number, pay, how, zone }) => ({
+      // ⚡ marks Express pickup orders (ready in 1–2 days), Vee 2026-11-12.
+      title: `${statusEmoji(status)} ${String(zone ?? "").includes("EXPRESS") ? "⚡ EXPRESS · " : ""}${name ?? "Customer"} · $${Number(total ?? 0).toFixed(2)}`,
       subtitle: [
         number,
         pay === "cash" ? "cash" : pay === "etransfer" ? "e-Transfer" : "",

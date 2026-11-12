@@ -275,6 +275,13 @@ export const shippingPrices = defineType({
     region("usa", "USA"),
     region("world", "Rest of the world"),
     defineField({
+      name: "expressPickupFee",
+      title: "Express pickup fee ($)",
+      description: "Extra charge for Express pickup (ready in 1–2 days instead of 3–5). e.g. 3 = $3. Leave empty to turn Express pickup off. Regular pickup is always free.",
+      type: "number",
+      validation: (r) => r.min(0),
+    }),
+    defineField({
       name: "freeInCanadaOver",
       title: "Free shipping in Canada on orders of ($)",
       description: "e.g. 75 = free shipping in Canada on orders of $75 or more. Leave empty for no free shipping.",
