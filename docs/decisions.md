@@ -259,7 +259,7 @@ Last updated: 2026-10-26
 - Seeded with the current prices. Tested locally: changing a price in the Studio changed the FAQ; removing USA removed it.
 
 ## 2026-11-12: Order numbers count up from 1002 (local, not published)
-- Vee: first order number 1002, then 1003, 1004… Replaces the random `VCS-XXXXXX` codes for e-Transfer/cash orders (`src/app/(shop)/checkout/actions.ts`).
+- Vee: first order number VCS1002, then VCS1003, VCS1004… (she first said 1002, then "VCS and then the number"). Replaces the random `VCS-XXXXXX` codes for e-Transfer/cash orders (`src/app/(shop)/checkout/actions.ts`).
 - The last number used is kept in Sanity (`counters.orderNumber`, created at the first order with 1001). Each order adds 1 there; tested with 10 orders at the same moment: 1002–1011, no repeats. If the counter can't be reached, the order gets a random VCS- code instead so it's never lost.
 - The two orders placed before this (VCS-SC7XVQ, VCS-CRFQS2) keep their old numbers.
 

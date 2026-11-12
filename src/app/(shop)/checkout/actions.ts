@@ -54,7 +54,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const str = (v: unknown, max = 300) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const cad = (cents: number) => new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format(cents / 100);
 
-// Order numbers count up from 1002 (Vee, 2026-11-12): 1002, 1003, 1004…
+// Order numbers count up from VCS1002 (Vee, 2026-11-12): VCS1002, VCS1003…
 // The last number used is kept in Sanity (counters.orderNumber); Sanity
 // applies each "+1" one at a time, so two orders never get the same number.
 // If the counter can't be reached, a random code is used so the order is
@@ -68,7 +68,7 @@ async function newOrderNumber(): Promise<string> {
   try {
     await writeClient.createIfNotExists({ _id: ORDER_COUNTER_ID, _type: "counter", last: FIRST_ORDER_NUMBER - 1 });
     const counter = await writeClient.patch(ORDER_COUNTER_ID).inc({ last: 1 }).commit<{ last: number }>();
-    return String(counter.last);
+    return `VCS${counter.last}`;
   } catch (e) {
     console.error("Order number counter failed, using a random code:", e);
     return randomOrderNumber();
