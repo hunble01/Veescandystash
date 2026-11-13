@@ -26,6 +26,22 @@ const ids = [
   "strawberry-bon-bons",
 ];
 
+// Vee's "new candy" folder (2026-11-13). Saved as <candy id>-2.webp so
+// browsers don't keep showing an earlier cut of the same photo.
+const newCandy = [
+  "albanese-white-strawberry-banana-bears",
+  "bubs-sour-diamond-strawberry-vanilla",
+  "bubs-sour-skull-lemon-raspberry",
+  "gerrits-satellite-wafers",
+  "huer-mango-frosty",
+  "huer-orange-slices-gummies",
+  "koala-red-band-sour-keys",
+  "swizzles-squashies-bubble-gum",
+  "swizzles-squashies-cherry-apple",
+  "vidal-mini-rainbow-belts",
+  "zweet-sour-belts-cotton-candy",
+];
+
 // Names from Vee's photo file names (2026-11-05: "use those names on the
 // website"). These override the Studio names until the Studio is updated.
 const names: Record<string, string> = {
@@ -38,7 +54,9 @@ const key = (id: string) => id.replace(/^candy-/, "");
 
 /** Photo for a candy id (Studio ids look like "candy-<id>"), or null. */
 export function candyPhoto(id: string): string | null {
-  return ids.includes(key(id)) ? `/candies/${key(id)}.webp` : null;
+  const k = key(id);
+  if (newCandy.includes(k)) return `/candies/${k}-2.webp`;
+  return ids.includes(k) ? `/candies/${k}.webp` : null;
 }
 
 /** Vee's file-name version of a candy's name, if it differs. */

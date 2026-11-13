@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { GummyBear, PeachRing, SourBelt, Sparkle, WrappedCandy, candyColours as k } from "@/components/Candies";
@@ -80,6 +81,30 @@ export default async function Home() {
 
       {/* Follow along on social (same band as the About page) */}
       <JoinTheFun className="pb-20 sm:pb-28" />
+
+      {/* We got Bubs! (Vee, 2026-11-13: before Custom orders, with her Bubs photo) */}
+      <section className="pb-20 sm:pb-28">
+        <Container>
+          <div data-reveal className="mx-auto flex max-w-4xl items-center gap-6 rounded-[var(--radius-card)] border-[3px] border-ink bg-pink-soft p-6 shadow-[var(--shadow-pop)] sm:gap-12 sm:p-10">
+            <div className="min-w-0 flex-1">
+              <p className="mb-2 text-sm font-extrabold tracking-[0.18em] text-pink-deep uppercase">✦ Now in the stash</p>
+              <h2 className="text-[clamp(2.2rem,7vw,3.75rem)] text-orange [text-shadow:3px_4px_0_var(--color-ink)]">We got Bubs!</h2>
+              <p className="mt-3 max-w-md text-lg font-semibold text-ink-soft">
+                Bubs Sour Skull Lemon Raspberry and Bubs Sour Diamond Strawberry &amp; Vanilla. 🌱 Vegan
+              </p>
+              <ButtonLink href="/build-your-stash" className="mt-6">Add them to your stash</ButtonLink>
+            </div>
+            <Image
+              src="/products/bubs-bags.webp"
+              alt="Bags of Bubs Sour Skull and Sour Diamond candy"
+              width={480}
+              height={853}
+              sizes="(min-width: 640px) 208px, 112px"
+              className="w-28 shrink-0 rotate-3 rounded-2xl shadow-xl sm:w-52"
+            />
+          </div>
+        </Container>
+      </section>
 
       {/* Custom order golden ticket */}
       <section className="pb-20 sm:pb-28">

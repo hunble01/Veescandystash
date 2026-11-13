@@ -270,3 +270,9 @@ Last updated: 2026-10-26
 - **Order email is now a full receipt:** items, then Subtotal, Discount (code), Pickup / Shipping, Total. It ends with "You'll be notified by email when your order is ready for pickup, with the address and a time" (or "has shipped").
 - **Payment received:** Vee emails customers herself (payment received, pickup address, and that a pickup date/time email follows). An automatic payment-receipt email was built, then removed at her request.
 - **Pickup:** regular pickup only, free, "ready in 3–5 days" (`site.fulfilment.pickupDays`). Express pickup (+$3, 1–2 days) is built but OFF: Studio → 🚚 Shipping prices → "Express pickup fee" is empty. Typing a fee there switches it on (shows "⚡ EXPRESS" on those orders). FAQ (Sanity draft faq-6) and Policies use "{pickup options}".
+
+## 2026-11-13: New candy photos, Bubs on the home page, cart login choice
+- Bubs candies no longer +$1 (changed in Sanity: `extraCharge` removed; fallback list in candies.ts too). Strawberry Bon Bons stays +$1.
+- Vee's "new candy" folder: 11 photos cut to the round lid and added for the candies that had none (website names unchanged). Saved as `public/candies/<id>-2.webp` (listed in `newCandy` in candyPhotos.ts) so browsers don't show an earlier cut. The source folder "new candy/" is not committed.
+- Home page: "We got Bubs!" section before the custom-order callout, with Vee's photo of the Bubs bags (`public/products/bubs-bags.webp`).
+- Cart: shoppers who aren't logged in choose **Log in**, **Sign up** (both come back to the cart with the promo code kept) or **Continue as guest**.

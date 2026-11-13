@@ -138,10 +138,27 @@ export function CartView({
         <PromoCode initialCode={saved} onChange={(c, percent) => setPromo({ code: c, percent })} />
         {welcomePercent && !isSignedIn ? (
           <p className="mt-3 text-sm font-bold">
-            🍬 <Link href="/sign-up" className="text-pink-deep underline underline-offset-4">Create an account</Link> and we’ll email you a code for {welcomePercent}% off your first order.
+            🍬 <Link href="/sign-up?redirect_url=/cart" onClick={() => saveCode(code)} className="text-pink-deep underline underline-offset-4">Create an account</Link> and we’ll email you a code for {welcomePercent}% off your first order.
           </p>
         ) : null}
-        {checkoutOpen ? (
+        {/* Log in, sign up or continue as a guest (Vee, 2026-11-13). Login brings them back to the cart. */}
+        {checkoutOpen && !isSignedIn ? (
+          <div className="mt-6 space-y-3">
+            <p className="font-extrabold">How would you like to order?</p>
+            <div className="grid grid-cols-2 gap-3">
+              <ButtonLink href="/sign-in?redirect_url=/cart" variant="secondary" onClick={() => saveCode(code)} className="px-3">
+                Log in
+              </ButtonLink>
+              <ButtonLink href="/sign-up?redirect_url=/cart" variant="secondary" onClick={() => saveCode(code)} className="px-3">
+                Sign up
+              </ButtonLink>
+            </div>
+            <Button type="button" onClick={checkout} disabled={status === "loading"} className="w-full">
+              {status === "loading" ? "Opening secure checkout…" : "Continue as guest"}
+            </Button>
+            <p className="text-center text-xs font-medium text-ink-soft">With an account you can see your orders and save favourites.</p>
+          </div>
+        ) : checkoutOpen ? (
           <Button type="button" onClick={checkout} disabled={status === "loading"} className="mt-6 w-full">
             {paymentMode === "manual" ? "Continue to order" : status === "loading" ? "Opening secure checkout…" : "Checkout securely"}
           </Button>

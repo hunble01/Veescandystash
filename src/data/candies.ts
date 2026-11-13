@@ -50,7 +50,7 @@ export const candies: CandyOption[] = [
   draft("swizzles-squashies-cherry-apple", "Swizzels Squashies Original Cherry Apple", "sweet"),
   draft("huer-mango-frosty", "Huer Mango Frosty", "sweet"),
   draft("koala-red-band-sour-keys", "Koala Red Band Sour Keys", "sour"),
-  plus1(draft("bubs-sour-skull-lemon-raspberry", "Bubs Sour Skull Lemon Raspberry", "sour", true)),
-  plus1(draft("bubs-sour-diamond-strawberry-vanilla", "Bubs Sour Diamond Strawberry & Vanilla", "sour", true)),
+  draft("bubs-sour-skull-lemon-raspberry", "Bubs Sour Skull Lemon Raspberry", "sour", true),
+  draft("bubs-sour-diamond-strawberry-vanilla", "Bubs Sour Diamond Strawberry & Vanilla", "sour", true),
   draft("gerrits-satellite-wafers", "Gerrit's Satellite Wafers", "sweet"),
 ];
